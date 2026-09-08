@@ -498,3 +498,200 @@ textarea.input {
   width: 100%;
   margin: 0 auto;
 }
+
+/* ============================================================================
+   Shared dashboard patterns — KPI cards + lightweight SVG/CSS charts.
+   Used by the pages built after the three flagship screens. Visually matches
+   the Government Dashboard's `.kpi` (which keeps its own local copy).
+   ========================================================================= */
+.kpi-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 16px;
+  margin-bottom: 20px;
+}
+.kpi-card {
+  background: var(--paper-raised);
+  border: 1px solid var(--slate-15);
+  border-radius: var(--radius-md);
+  padding: 18px 20px;
+}
+.kpi-card .kc-label {
+  font-size: 12px;
+  color: var(--slate);
+  margin-bottom: 6px;
+}
+.kpi-card .kc-value {
+  font-family: var(--sans);
+  font-weight: 600;
+  font-size: 28px;
+  font-variant-numeric: tabular-nums;
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+}
+.kpi-card .kc-sub {
+  font-size: 11px;
+  color: var(--slate);
+  margin-top: 8px;
+  padding-top: 8px;
+  border-top: 1px solid var(--slate-10);
+}
+
+/* section heading used across the new pages */
+.dash-section-title {
+  font-family: var(--serif);
+  font-weight: 600;
+  font-size: 17px;
+  margin: 0 0 14px;
+}
+.dash-grid-2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+  margin-bottom: 20px;
+}
+.dash-grid-1-2 {
+  display: grid;
+  grid-template-columns: 1.6fr 1fr;
+  gap: 20px;
+  margin-bottom: 20px;
+}
+@media (max-width: 1000px) {
+  .dash-grid-2,
+  .dash-grid-1-2 {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* --- charts --- */
+.chart-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  font-size: 11.5px;
+  color: var(--slate);
+  margin-top: 10px;
+}
+.chart-legend .dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 2px;
+  display: inline-block;
+  margin-right: 5px;
+  vertical-align: middle;
+}
+.mini-bars {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.mini-bar-row {
+  display: grid;
+  grid-template-columns: minmax(90px, 34%) 1fr auto;
+  align-items: center;
+  gap: 10px;
+  font-size: 12.5px;
+}
+.mini-bar-track {
+  height: 8px;
+  background: var(--slate-10);
+  border-radius: var(--radius-xs);
+  overflow: hidden;
+}
+.mini-bar-fill {
+  height: 100%;
+  border-radius: var(--radius-xs);
+  background: var(--ink);
+}
+.mini-bar-row .mb-val {
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+.stacked-bar {
+  display: flex;
+  height: 26px;
+  border-radius: var(--radius-xs);
+  overflow: hidden;
+}
+.stacked-bar > span {
+  min-width: 2px;
+}
+.trendline {
+  width: 100%;
+  height: 120px;
+  overflow: visible;
+}
+.trendline-axis {
+  display: flex;
+  justify-content: space-between;
+  font-size: 10.5px;
+  color: var(--slate);
+  margin-top: 4px;
+}
+.heatmap {
+  display: grid;
+  gap: 3px;
+  font-size: 11px;
+}
+.heatmap-cell {
+  aspect-ratio: 1.7 / 1;
+  min-height: 30px;
+  border-radius: var(--radius-xs);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  color: var(--ink);
+}
+.heatmap-rowlabel,
+.heatmap-collabel {
+  color: var(--slate);
+  display: flex;
+  align-items: center;
+}
+.heatmap-collabel {
+  justify-content: center;
+  text-align: center;
+  padding-bottom: 4px;
+}
+
+/* generic dense list row (recent activity, etc.) */
+.dash-list-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 0;
+  border-bottom: 1px solid var(--slate-10);
+  font-size: 13px;
+}
+.dash-list-row:last-child {
+  border-bottom: none;
+}
+.dash-list-row .dl-sub {
+  font-size: 11.5px;
+  color: var(--slate);
+}
+.dash-note {
+  font-size: 11.5px;
+  color: var(--slate);
+  margin-top: 8px;
+}
+
+/* ---- skill chip (Risk Center + Employer Dashboard) ---- */
+.chip-skill {
+  display: inline-block;
+  background: var(--brick-tint);
+  color: var(--brick);
+  font-size: 12px;
+  padding: 4px 10px;
+  border-radius: var(--radius-pill);
+  margin: 0 6px 6px 0;
+}
+.chip-skill.present {
+  background: var(--teal-tint);
+  color: var(--teal);
+}

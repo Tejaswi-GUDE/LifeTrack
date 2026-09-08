@@ -12,13 +12,16 @@ import './styles/base.css';
 
 import App from './App';
 import { SessionProvider } from './context/SessionContext';
+import ErrorBoundary from './components/ErrorBoundary';
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>
-    <BrowserRouter>
-      <SessionProvider>
-        <App />
-      </SessionProvider>
-    </BrowserRouter>
+    <ErrorBoundary variant="app">
+      <BrowserRouter>
+        <SessionProvider>
+          <App />
+        </SessionProvider>
+      </BrowserRouter>
+    </ErrorBoundary>
   </StrictMode>,
 );

@@ -5,6 +5,7 @@ import { getPageMeta, roleHome } from '../../config/nav';
 import Sidebar from './Sidebar';
 import Topbar from './Topbar';
 import { TopbarSlotProvider } from './TopbarSlot';
+import ErrorBoundary from '../ErrorBoundary';
 
 /**
  * AppShell — the one product frame (Design System §8/§19): an --ink sidebar
@@ -51,7 +52,9 @@ export default function AppShell() {
             onOpenNav={() => setNavOpen(true)}
           />
           <main className="content">
-            <Outlet />
+            <ErrorBoundary key={location.pathname}>
+              <Outlet />
+            </ErrorBoundary>
           </main>
         </div>
       </div>

@@ -14,6 +14,7 @@ const ROLES = [
   { role: 'provider', label: 'Training Provider', to: '/provider/dashboard' },
   { role: 'counsellor', label: 'Counsellor', to: '/counsellor/worklist' },
   { role: 'trainee', label: 'Trainee', to: '/trainee/home' },
+  { role: 'employer', label: 'Employer', to: '/employer/dashboard' },
 ];
 
 export default function Login() {
@@ -53,7 +54,7 @@ export default function Login() {
         </Card>
 
         <div style={{ fontSize: 12, color: 'var(--slate)', marginTop: 16 }}>
-          Employers don't sign in — they open a verification request from a shared link.
+          Employers normally act on a shared verification link; the Employer role here is for the demo.
         </div>
       </div>
     </div>

@@ -1,8 +1,9 @@
 # LifeTrack — Frontend
 
-React (Vite) + Tailwind CSS + React Router, per `docs/02_Architecture.md`.
-This is the **foundation** only: project structure, routing, design tokens,
-global styling, and reusable UI primitives. No dashboards or workflows yet.
+React 18 + Vite 5 + Tailwind 3 + React Router 6, per `docs/02_Architecture.md`.
+Every sidebar route across all five roles leads to an implemented screen that
+renders in a real browser — no "screen not built" placeholders, no blank
+pages. Verified with Playwright/Chromium (`scripts/browse-check.mjs`).
 
 ## Run
 
@@ -30,10 +31,12 @@ With the backend running (`cd backend && npm run dev` — re-seeds each start):
 - `node scripts/smoke-riskcenter.mjs` — Risk & Intervention Center (list +
   filters, master-detail, explained risk, skill mismatch, **Approve →
   persisted review-status change**, profile navigation, error state).
+- `node scripts/smoke-allscreens.mjs` — walks every sidebar route for every
+  role: no crash, no placeholder, and the four main dashboards render data.
 
 Each renders the real `<App/>` in jsdom against `http://localhost:4000`.
-`smoke-riskcenter` mutates an intervention, so restart the backend before
-re-running it.
+`smoke-riskcenter` / `smoke-allscreens` mutate data, so restart the backend
+before re-running them.
 
 ## Structure
 
@@ -115,25 +118,63 @@ right area. Below 768px the sidebar becomes a hamburger-triggered drawer.
   Follow-ups / Verification / Interventions), and "View details" expanders.
 - **Trainee Directory** (`/provider/trainees`, `/counsellor/trainees`) —
   live from `GET /api/trainees`; status + risk filters; rows open the profile.
-- **Risk & Intervention Center** (`/counsellor/worklist`) — master-detail
-  worklist. List from `GET /api/trainees` (risk-sorted, `flags` for the
-  status filter); detail from `GET /api/trainees/:id/risk` (explained risk
-  score + factor list, root cause, course-vs-job skill-mismatch panel,
-  recommended intervention with priority + human-review status). Approve /
-  Dismiss / Reassign write through `POST` / `PATCH /api/interventions/:id`
-  (with `AuditLog` rows) — the review-status pill reflects the **persisted**
-  state. Selected trainee is held in the `?t=` URL param.
+- **Risk & Intervention Center** (`/counsellor/worklist`, `/provider/risk`) —
+  master-detail worklist; detail from `GET /api/trainees/:id/risk`; Approve /
+  Dismiss / Reassign persist via `POST` / `PATCH /api/interventions/:id`.
+- **Provider Dashboard** (`/provider/dashboard`) — `GET /api/dashboards/provider/:id`.
+  KPIs, cohort/course table, outcome-mix + wage-trend charts, trainees
+  requiring attention, non-placement reasons, skill-gap bars, recent
+  interventions. Provider + course switchers in the topbar.
+- **Trainee "My Career"** (`/trainee/home`) — `GET /api/trainees/:id`. Summary,
+  current status / income / skill-match cards, recommended next steps,
+  follow-up + consent status, and the full career timeline (reuses
+  `components/Timeline.jsx`). Trainee switcher for the demo.
+- **Employer Dashboard** (`/employer/dashboard`) — `GET /api/dashboards/employer`.
+  Hiring KPIs, verification-request table (→ `/employer/verify/:id`),
+  employees & outcomes, skill-requirement cards. Employer switcher.
+- **District & Outcome Analytics** (`/government/analytics`,
+  `/government/district/:id`) — `GET /api/analytics/outcomes`. KPI strip,
+  wage-trend + outcome-mix, provider & course comparison, non-placement
+  reasons, skill supply-vs-demand, district × skill-gap heatmap,
+  demographics cross-tabs. District / provider / course filters.
+- **Secondary** — Provider Performance, Skill Intelligence, Follow-up Queue
+  (provider/counsellor/trainee), Intervention Log, Course Skill-Gap report,
+  Career Timeline, Consent controls (persist via `PATCH /trainees/:id/consent`),
+  conversational Follow-up check-in (`POST /followups/:id/response`), shared
+  Settings, and Seed/Reset (`POST /admin/seed/reset`).
 
-## Not done yet (later steps)
+Charts are pure SVG/CSS (`components/charts/index.jsx`) — no chart library
+was added. `hooks/useScopedEntity.jsx` handles the provider / employer /
+trainee scope switchers (mock login only binds a role). `components/
+ErrorBoundary.jsx` wraps the app (in `main.jsx`) and each route (in
+`AppShell`) so a bug on one screen can never blank the whole app.
 
-Real mock-login against `POST /api/auth/login`, the district / provider
-drill-down screens (routes are placeholders), the trainee self-view
-(`/trainee/*`), and the remaining role dashboards / workflow screens.
+### Real-browser validation
 
-## Dependency note
+With both dev servers running:
 
-`package.json` currently resolves `vite@8` + `react-router-dom@7` +
-`@vitejs/plugin-react@4`, which have a peer-dependency conflict
-(`npm ci` fails; `npm install --legacy-peer-deps` works). The app builds and
-runs on this combination, and all headless smokes pass. A coherent pin is
-`vite@^5.4`, `@vitejs/plugin-react@^4.3`, `react-router-dom@^6.28`.
+```
+npx playwright install chromium   # one-time
+node scripts/browse-check.mjs      # every route × every role in Chromium
+node scripts/browse-nav.mjs        # sidebar nav, internal nav, error handling
+```
+
+## Dependency note — IMPORTANT
+
+An external process (an IDE/editor auto-updater) repeatedly rewrites
+`package.json` to `vite@8` + `react-router-dom@7`. **`vite@8` (rolldown) is
+incompatible with `@vitejs/plugin-react@4`**: it fails to inject
+`window.__vite_plugin_react_preamble_installed__`, so every `.jsx` component
+throws `"@vitejs/plugin-react can't detect preamble"` at import — **every page
+renders blank**.
+
+This is pinned back to a coherent, compatible set and reinstalled:
+`vite@5.4.11`, `@vitejs/plugin-react@4.3.4`, `react-router-dom@6.28.0`
+(exact versions, no `^`). `vite.config.js` also loads the React plugin
+defensively — if it ever can't load, Vite's built-in JSX transform keeps the
+app rendering (only component-level HMR is lost).
+
+If pages go blank again: check `node -e "console.log(require('vite/package.json').version)"`.
+If it's `8.x`, run `rm -rf node_modules package-lock.json && npm install`
+(the pinned `package.json` on disk installs the right versions; `npm run dev`
+uses whatever `vite` is in `node_modules/.bin` regardless of a later rewrite).

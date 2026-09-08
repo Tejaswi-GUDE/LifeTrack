@@ -10,3 +10,9 @@ dist-ssr
 
 # transient esbuild output from scripts/smoke-dashboard.mjs
 scripts/_smoke-bundle.mjs
+
+# transient test artifacts
+scripts/_d.mjs
+scripts/_ssr*.mjs
+test-results/
+playwright-report/

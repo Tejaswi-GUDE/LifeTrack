@@ -3,15 +3,8 @@
  *
  * The canonical MVP areas are: Overview, Trainees, Providers, Follow-ups,
  * Risk & Interventions, Skill Intelligence, Analytics, Settings / Consent.
- * Each role sees the subset its RBAC scope allows (PRD §20 / Build Spec §2):
- *   • government — aggregated, read-only: no trainee lists, no worklist
- *   • provider   — everything scoped to their own cohorts
- *   • counsellor — risk worklist first; trainees + follow-ups
- *   • trainee    — their own record only
- *
- * Landing routes below are placeholders for this step; the real screens
- * replace them later. Detail routes (:id) are matched to the right nav item
- * via `match` prefixes.
+ * Each role sees the subset its RBAC scope allows (PRD §20 / Build Spec §2).
+ * Every item below leads to an implemented screen.
  */
 
 export const ROLE_LABEL = {
@@ -19,6 +12,7 @@ export const ROLE_LABEL = {
   provider: 'Training Provider',
   counsellor: 'Counsellor',
   trainee: 'Trainee',
+  employer: 'Employer',
 };
 
 const NAV_BY_ROLE = {
@@ -32,9 +26,9 @@ const NAV_BY_ROLE = {
     {
       label: 'Skill Intelligence',
       to: '/government/skill-intelligence',
-      match: ['/government/skill-intelligence', '/government/district'],
+      match: ['/government/skill-intelligence'],
     },
-    { label: 'Analytics', to: '/government/analytics' },
+    { label: 'Analytics', to: '/government/analytics', match: ['/government/analytics', '/government/district'] },
     {
       label: 'Settings / Consent',
       to: '/government/settings',
@@ -70,6 +64,11 @@ const NAV_BY_ROLE = {
     { label: 'Follow-ups', to: '/trainee/followups', match: ['/trainee/followups', '/trainee/followup'] },
     { label: 'Consent', to: '/trainee/consent' },
   ],
+  employer: [
+    { label: 'Overview', to: '/employer/dashboard' },
+    { label: 'Verification Requests', to: '/employer/verifications', match: ['/employer/verifications', '/employer/verify'] },
+    { label: 'Settings', to: '/employer/settings' },
+  ],
 };
 
 export function navForRole(role) {
@@ -82,7 +81,7 @@ export function roleHome(role) {
 
 export function settingsRouteForRole(role) {
   if (role === 'trainee') return '/trainee/consent';
-  if (role && NAV_BY_ROLE[role]) return `/${role}/settings`;
+  if (role && NAV_BY_ROLE[role]) return NAV_BY_ROLE[role].find((n) => /Settings/.test(n.label))?.to || `/${role}/settings`;
   return '/login';
 }
 
@@ -91,19 +90,19 @@ const META_EXACT = {
   // government
   '/government/dashboard': { crumb: 'Overview', title: 'Skilling Outcomes' },
   '/government/providers': { crumb: 'Providers', title: 'Provider Performance' },
-  '/government/provider-comparison': { crumb: 'Providers', title: 'Provider Performance Comparison' },
+  '/government/provider-comparison': { crumb: 'Providers', title: 'Provider Performance' },
   '/government/skill-intelligence': { crumb: 'Skill Intelligence', title: 'District Skill Intelligence' },
-  '/government/analytics': { crumb: 'Analytics', title: 'Outcome Analytics' },
+  '/government/analytics': { crumb: 'Analytics', title: 'District & Outcome Analytics' },
   '/government/settings': { crumb: 'Settings / Consent', title: 'Settings' },
   '/admin/seed': { crumb: 'Settings / Consent', title: 'Seed / Reset Demo Data' },
   // provider
-  '/provider/dashboard': { crumb: 'Overview', title: 'Cohort Overview' },
+  '/provider/dashboard': { crumb: 'Overview', title: 'Provider Dashboard' },
   '/provider/trainees': { crumb: 'Trainees', title: 'Trainees' },
   '/provider/followups': { crumb: 'Follow-ups', title: 'Follow-up Status' },
-  '/provider/risk': { crumb: 'Risk & Interventions', title: 'Risk & Interventions' },
+  '/provider/risk': { crumb: 'Risk & Interventions', title: 'Outcome Risk & Intervention Center' },
   '/provider/interventions': { crumb: 'Risk & Interventions', title: 'Intervention Log' },
   '/provider/skill-gaps': { crumb: 'Skill Intelligence', title: 'Course Skill Gaps' },
-  '/provider/analytics': { crumb: 'Analytics', title: 'Cohort Analytics' },
+  '/provider/analytics': { crumb: 'Analytics', title: 'Outcome Analytics' },
   '/provider/settings': { crumb: 'Settings / Consent', title: 'Settings' },
   // counsellor
   '/counsellor/worklist': { crumb: 'Risk & Interventions', title: 'Outcome Risk & Intervention Center' },
@@ -111,15 +110,19 @@ const META_EXACT = {
   '/counsellor/followups': { crumb: 'Follow-ups', title: 'Follow-up Queue' },
   '/counsellor/settings': { crumb: 'Settings / Consent', title: 'Settings' },
   // trainee
-  '/trainee/home': { crumb: 'Overview', title: 'Your LifeTrack' },
-  '/trainee/timeline': { crumb: 'Career Timeline', title: 'Career Timeline' },
-  '/trainee/followups': { crumb: 'Follow-ups', title: 'Your Follow-ups' },
+  '/trainee/home': { crumb: 'Overview', title: 'My Career' },
+  '/trainee/timeline': { crumb: 'Career Timeline', title: 'My Career Timeline' },
+  '/trainee/followups': { crumb: 'Follow-ups', title: 'My Follow-ups' },
   '/trainee/consent': { crumb: 'Consent', title: 'Consent Controls' },
+  // employer
+  '/employer/dashboard': { crumb: 'Overview', title: 'Employer Dashboard' },
+  '/employer/verifications': { crumb: 'Verification Requests', title: 'Employer Dashboard' },
+  '/employer/settings': { crumb: 'Settings', title: 'Settings' },
 };
 
 const META_PATTERNS = [
-  [/^\/government\/district\/[^/]+$/, { crumb: 'Skill Intelligence', title: 'District Detail' }],
-  [/^\/government\/provider\/[^/]+$/, { crumb: 'Providers', title: 'Provider Detail' }],
+  [/^\/government\/district\/[^/]+$/, { crumb: 'Analytics', title: 'District Analytics' }],
+  [/^\/government\/provider\/[^/]+$/, { crumb: 'Providers', title: 'Provider Dashboard' }],
   [/^\/provider\/trainee\/[^/]+$/, { crumb: 'Trainees', title: 'Trainee Record' }],
   [/^\/provider\/course\/[^/]+\/skill-gap$/, { crumb: 'Skill Intelligence', title: 'Course Skill-Gap Report' }],
   [/^\/counsellor\/trainee\/[^/]+$/, { crumb: 'Trainees', title: 'Trainee Record' }],

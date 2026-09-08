@@ -1,6 +1,56 @@
 const router = require('express').Router();
 const mongoose = require('mongoose');
-const { Intervention, AuditLog } = require('../models');
+const { Intervention, AuditLog, Trainee, Course } = require('../models');
+const { INTERVENTION_LABELS, STATUS_LABELS, label } = require('../lib/labels');
+
+const norm = (v) => (v && v !== 'all' && v !== '' ? String(v) : null);
+
+// GET /api/interventions?providerId=&traineeId=&status=  — intervention log
+router.get('/', async (req, res, next) => {
+  try {
+    const providerId = norm(req.query.providerId);
+    const traineeId = norm(req.query.traineeId);
+    const status = norm(req.query.status);
+
+    const traineeQuery = {};
+    if (providerId && mongoose.isValidObjectId(providerId)) traineeQuery.providerId = providerId;
+    if (traineeId && mongoose.isValidObjectId(traineeId)) traineeQuery._id = traineeId;
+    const [trainees, courses] = await Promise.all([Trainee.find(traineeQuery).lean(), Course.find().lean()]);
+    const tmap = new Map(trainees.map((t) => [String(t._id), t]));
+    const cmap = new Map(courses.map((c) => [String(c._id), c]));
+
+    const ivQuery = { traineeId: { $in: trainees.map((t) => t._id) } };
+    if (status) ivQuery.status = status;
+    const rows = await Intervention.find(ivQuery).lean();
+
+    const interventions = rows
+      .map((iv) => {
+        const t = tmap.get(String(iv.traineeId));
+        return {
+          id: String(iv._id),
+          traineeId: String(iv.traineeId),
+          traineeName: t ? t.name : '—',
+          course: t ? (cmap.get(String(t.courseId)) || {}).name || null : null,
+          currentStatus: t ? t.currentStatus : null,
+          currentStatusLabel: t ? label(STATUS_LABELS, t.currentStatus) : null,
+          type: iv.type,
+          displayType: label(INTERVENTION_LABELS, iv.type),
+          rationale: iv.rationale || '',
+          recommendedBy: iv.recommendedBy,
+          status: iv.status,
+          outcomeNotes: iv.outcomeNotes || null,
+          completedAt: iv.completedAt || null,
+          updatedAt: iv.updatedAt || iv.createdAt || null,
+        };
+      })
+      .sort((a, b) => new Date(b.updatedAt || 0) - new Date(a.updatedAt || 0));
+
+    const counts = interventions.reduce((acc, x) => ((acc[x.status] = (acc[x.status] || 0) + 1), acc), {});
+    res.json({ count: interventions.length, counts, interventions });
+  } catch (err) {
+    next(err);
+  }
+});
 
 const IV_TYPES = [
   'bridge_course_referral', 'employer_referral_drive', 'career_counselling',
