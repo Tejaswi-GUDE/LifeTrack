@@ -1,0 +1,12 @@
+node_modules
+dist
+dist-ssr
+*.local
+.env
+.env.*
+!.env.example
+.DS_Store
+*.log
+
+# transient esbuild output from scripts/smoke-dashboard.mjs
+scripts/_smoke-bundle.mjs

@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>LifeTrack — Government Impact Dashboard</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Serif:wght@500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="tokens.css">
+<style>
+  .kpi-strip{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:20px;}
+  .kpi{background:var(--paper-raised);border:1px solid var(--slate-15);border-radius:var(--radius-md);padding:18px 20px;}
+  .kpi .k-label{font-size:12px;color:var(--slate);margin-bottom:6px;}
+  .kpi .k-value{font-family:var(--sans);font-weight:600;font-size:30px;font-variant-numeric:tabular-nums;display:flex;align-items:baseline;gap:8px;}
+  .kpi .k-delta{font-size:12px;font-weight:600;}
+  .kpi .k-delta.up{color:var(--teal);}
+  .kpi .k-delta.down{color:var(--brick);}
+  .kpi .k-conf{font-size:11px;color:var(--slate);margin-top:8px;padding-top:8px;border-top:1px solid var(--slate-10);}
+  .conf-dots{display:inline-flex;gap:3px;margin-right:5px;vertical-align:middle;}
+  .conf-dots span{width:6px;height:6px;border-radius:50%;display:inline-block;}
+
+  .alerts-row{display:flex;flex-direction:column;gap:10px;margin-bottom:24px;}
+
+  .two-col{display:grid;grid-template-columns:1.6fr 1fr;gap:20px;margin-bottom:24px;}
+  .panel-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;}
+  .panel-head h2{font-family:var(--serif);font-weight:600;font-size:17px;}
+
+  .skillgap-row{display:flex;justify-content:space-between;align-items:center;padding:9px 0;border-bottom:1px solid var(--slate-10);font-size:13px;}
+  .skillgap-row:last-child{border-bottom:none;}
+  .skillgap-row .sg-name{font-weight:500;}
+  .skillgap-row .sg-courses{font-size:11.5px;color:var(--slate);}
+  .skillgap-count{background:var(--ochre-tint);color:var(--ochre);font-size:11.5px;font-weight:600;padding:2px 9px;border-radius:var(--radius-pill);}
+
+  .cause-bar{display:flex;height:26px;border-radius:var(--radius-xs);overflow:hidden;margin-bottom:10px;}
+  .cause-legend{display:flex;flex-wrap:wrap;gap:12px;font-size:11.5px;color:var(--slate);}
+  .cause-legend .dot{width:8px;height:8px;border-radius:2px;display:inline-block;margin-right:5px;}
+
+  .table-wrap{background:var(--paper-raised);border:1px solid var(--slate-15);border-radius:var(--radius-md);overflow:hidden;}
+  .trend{display:inline-flex;align-items:center;gap:4px;font-size:12px;font-weight:600;}
+  footer.note{margin-top:8px;font-size:11.5px;color:var(--slate);text-align:right;}
+</style>
+</head>
+<body>
+<div class="app">
+  <aside class="sidebar">
+    <div class="wordmark">LifeTrack</div>
+    <div class="role-tag">Government / Policymaker</div>
+    <nav>
+      <a class="active">Outcome Impact</a>
+      <a>District Intelligence</a>
+      <a>Provider Performance</a>
+      <a>Skill Intelligence</a>
+      <a>Analytics</a>
+    </nav>
+    <div class="who"><strong>Dept. of Skill Development</strong>State of Jharkhand &amp; Bihar</div>
+  </aside>
+
+  <div class="main">
+    <div class="topbar">
+      <div class="titleblock">
+        <div class="crumb">Outcome Impact</div>
+        <h1>Skilling Outcomes — FY 2026</h1>
+      </div>
+      <div class="controls">
+        <select class="select"><option>All states</option><option>Jharkhand</option><option>Bihar</option></select>
+        <select class="select"><option>All districts</option><option>Ranchi</option><option>Patna</option></select>
+        <div class="seg"><button class="active">All data</button><button>Verified only</button></div>
+      </div>
+    </div>
+
+    <div class="content">
+
+      <div class="alerts-row">
+        <div class="alert">
+          <svg class="a-icon" viewBox="0 0 20 20" fill="none" stroke="#A33B2B" stroke-width="1.6"><circle cx="10" cy="10" r="8"/><path d="M10 6v5M10 14h.01"/></svg>
+          <div><div class="a-title">Ranchi placement rate down 8 points vs. previous cohort</div><div class="a-body">Driven mainly by skill mismatch in Data Entry &amp; Office Assistant (Ranchi Skill Mission Center).</div></div>
+        </div>
+        <div class="alert warning">
+          <svg class="a-icon" viewBox="0 0 20 20" fill="none" stroke="#B8811E" stroke-width="1.6"><circle cx="10" cy="10" r="8"/><path d="M10 6v5M10 14h.01"/></svg>
+          <div><div class="a-title">2 employer verifications pending over 14 days</div><div class="a-body">QuickBooks Data Solutions, BuildRight Contractors — awaiting confirmation.</div></div>
+        </div>
+      </div>
+
+      <div class="kpi-strip">
+        <div class="kpi">
+          <div class="k-label">Placement Rate</div>
+          <div class="k-value">62.5%<span class="k-delta up">▲ 3.2</span></div>
+          <div class="k-conf"><span class="conf-dots"><span style="background:var(--teal)"></span><span style="background:var(--ochre)"></span><span style="background:var(--slate-30)"></span></span>5 of 8 employed — 4 verified, 1 self-reported</div>
+        </div>
+        <div class="kpi">
+          <div class="k-label">Retention Rate (any active job)</div>
+          <div class="k-value">100%<span class="k-delta up">▲ 0.0</span></div>
+          <div class="k-conf">5 of 5 ever-employed trainees currently active</div>
+        </div>
+        <div class="kpi">
+          <div class="k-label">Avg. Wage Growth</div>
+          <div class="k-value">45.6%<span class="k-delta up">▲ 6.1</span></div>
+          <div class="k-conf">Across 4 trainees with 2+ income checkpoints</div>
+        </div>
+        <div class="kpi">
+          <div class="k-label">Avg. Skill Match Score</div>
+          <div class="k-value">88.3%<span class="k-delta down">▼ 1.4</span></div>
+          <div class="k-conf">Across 6 employed / self-employed trainees</div>
+        </div>
+      </div>
+
+      <div class="two-col">
+        <div class="card">
+          <div class="panel-head">
+            <h2>Provider &amp; District Performance</h2>
+            <div class="seg"><button class="active">By Provider</button><button>By District</button></div>
+          </div>
+          <div class="table-wrap">
+            <table class="tbl">
+              <thead><tr><th>Provider</th><th>District</th><th>Trainees</th><th>Placement<span class="sort-ic">▾</span></th><th>Skill Match</th><th>Confidence mix</th></tr></thead>
+              <tbody>
+                <tr><td>Ranchi Skill Mission Center</td><td>Ranchi</td><td class="num">4</td><td class="num" style="color:var(--brick)">50%</td><td class="num">57%</td><td class="num"><span class="badge outline-teal">2H</span> <span class="badge outline-ochre">1M</span> <span class="badge neutral">1L</span></td></tr>
+                <tr><td>Patna Livelihood Institute</td><td>Patna</td><td class="num">3</td><td class="num" style="color:var(--teal)">100%</td><td class="num">100%</td><td class="num"><span class="badge outline-teal">2H</span> <span class="badge outline-ochre">1M</span></td></tr>
+                <tr><td>Ranchi Women Skill Academy</td><td>Ranchi</td><td class="num">1</td><td class="num" style="color:var(--teal)">100%</td><td class="num">100%</td><td class="num"><span class="badge outline-teal">1H</span></td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <div style="display:flex;flex-direction:column;gap:20px;">
+          <div class="card">
+            <div class="card-title">Skill Gap Intelligence</div>
+            <div class="card-sub">Most frequently missing skills, certified trainees</div>
+            <div class="skillgap-row"><div><div class="sg-name">MS Excel</div><div class="sg-courses">Data Entry &amp; Office Assistant</div></div><span class="skillgap-count">1 trainee</span></div>
+            <div class="skillgap-row"><div><div class="sg-name">Tally Software</div><div class="sg-courses">Data Entry &amp; Office Assistant</div></div><span class="skillgap-count">0 trainees</span></div>
+          </div>
+
+          <div class="card">
+            <div class="card-title">Non-Placement Reasons</div>
+            <div class="card-sub">Among currently unplaced / non-responsive trainees</div>
+            <div class="cause-bar">
+              <div style="width:50%;background:var(--ochre)"></div>
+              <div style="width:50%;background:var(--slate-30)"></div>
+            </div>
+            <div class="cause-legend">
+              <span><span class="dot" style="background:var(--ochre)"></span>Skill mismatch (inferred) — 1</span>
+              <span><span class="dot" style="background:var(--slate-30)"></span>Other / non-responsive — 1</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <footer class="note">Data as of 8 Sep 2026 · 8 trainees tracked across 3 providers, 2 districts</footer>
+    </div>
+  </div>
+</div>
+</body>
+</html>

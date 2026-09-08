@@ -1,0 +1,500 @@
+/* ============================================================================
+   LifeTrack — primitive component styles
+   ----------------------------------------------------------------------------
+   These EXTEND the approved tokens.css. Nothing here introduces a new visual
+   language: every rule follows a section of docs/04_Design_System.md for a
+   component that the flagship mockups referenced but tokens.css did not ship
+   (inputs, modal, drawer, tooltip, dropdown menu). Bespoke classes are
+   prefixed `lt-` so they never collide with the approved class names.
+   ========================================================================= */
+
+/* ---- Inputs (Design System §11) ------------------------------------------ */
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.field-label {
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--slate);
+}
+.input {
+  height: 40px;
+  width: 100%;
+  padding: 0 12px;
+  font-family: var(--sans);
+  font-size: 15px;
+  color: var(--ink);
+  background: var(--paper-raised);
+  border: 1px solid var(--slate-30);
+  border-radius: var(--radius-sm);
+}
+.input::placeholder {
+  color: var(--slate);
+  opacity: 0.75;
+}
+.input:focus-visible {
+  border-color: var(--ink);
+  box-shadow: var(--shadow-focus);
+  outline: none;
+}
+.input:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+textarea.input {
+  height: auto;
+  min-height: 88px;
+  padding: 10px 12px;
+  line-height: 1.5;
+  resize: vertical;
+}
+/* The one place the scale steps up: trainee-facing conversational follow-up */
+.input--lg {
+  height: 48px;
+  font-size: 16px;
+}
+.input--error {
+  border-color: var(--brick);
+}
+.input--error:focus-visible {
+  border-color: var(--brick);
+}
+.field-help {
+  font-size: 13px;
+  color: var(--slate);
+}
+.field-help--error {
+  color: var(--brick);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+/* Field-height select variant (tokens.css `.select` is the 36px filter size) */
+.select--field {
+  height: 40px;
+  font-size: 15px;
+}
+
+/* ---- Table wrapper (used by the flagship dashboards) ------------------- */
+.table-wrap {
+  background: var(--paper-raised);
+  border: 1px solid var(--slate-15);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+}
+.table-scroll {
+  overflow-x: auto;
+}
+
+/* ---- Chip filter (Trainee Profile timeline filter) -------------------- */
+.chip-filter {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+.chip {
+  font-size: 12px;
+  padding: 5px 12px;
+  border-radius: var(--radius-pill);
+  border: 1px solid var(--slate-30);
+  color: var(--slate);
+  cursor: pointer;
+  background: var(--paper-raised);
+  white-space: nowrap;
+}
+.chip.active {
+  background: var(--ink);
+  color: #fff;
+  border-color: var(--ink);
+}
+
+/* ---- Stage label (Trainee Profile timeline) -------------------------- */
+.stage-label {
+  display: inline-block;
+  font-size: 10.5px;
+  font-weight: 600;
+  color: var(--slate);
+  margin-bottom: 4px;
+}
+
+/* ---- Human-review status pill (Risk & Intervention Center) ----------- */
+.review-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: var(--paper);
+  border: 1px solid var(--slate-15);
+  border-radius: var(--radius-pill);
+  padding: 6px 14px;
+  font-size: 12.5px;
+}
+.review-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--ochre);
+  flex: 0 0 8px;
+}
+.review-dot--approved {
+  background: var(--teal);
+}
+.review-dot--completed {
+  background: var(--ink);
+}
+
+/* ---- Extra badge combinations (same recipe as tokens.css) ----------- */
+.badge.outline-slate {
+  background: var(--slate-tint);
+  color: var(--slate);
+  border: 1px solid var(--slate-30);
+}
+.badge.solid-plum {
+  background: var(--plum);
+  color: #fff;
+}
+
+/* ---- Modal (Design System §20) ------------------------------------- */
+.lt-scrim {
+  position: fixed;
+  inset: 0;
+  background: rgba(28, 43, 69, 0.4); /* --ink @ 40%, no blur */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  z-index: 100;
+}
+.lt-modal {
+  background: var(--paper-raised);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-lg);
+  width: 100%;
+  max-width: 560px;
+  max-height: calc(100vh - 48px);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+.lt-modal--wide {
+  max-width: 720px;
+}
+.lt-modal-header,
+.lt-drawer-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 18px 24px;
+  border-bottom: 1px solid var(--slate-15);
+}
+.lt-modal-title,
+.lt-drawer-title {
+  font-family: var(--serif);
+  font-weight: 600;
+  font-size: 21px;
+}
+.lt-modal-body,
+.lt-drawer-body {
+  padding: 20px 24px;
+  overflow-y: auto;
+}
+.lt-modal-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  padding: 16px 24px;
+  border-top: 1px solid var(--slate-15);
+}
+.lt-x {
+  background: transparent;
+  border: none;
+  color: var(--slate);
+  font-size: 18px;
+  line-height: 1;
+  padding: 4px;
+  border-radius: var(--radius-xs);
+}
+.lt-x:hover {
+  color: var(--ink);
+}
+
+/* ---- Drawer / side sheet (Design System §9/§20 — radius-lg surface) - */
+.lt-scrim--drawer {
+  align-items: stretch;
+  justify-content: flex-end;
+  padding: 0;
+}
+.lt-drawer {
+  background: var(--paper-raised);
+  box-shadow: var(--shadow-lg);
+  width: 420px;
+  max-width: 92vw;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  border-top-left-radius: var(--radius-lg);
+  border-bottom-left-radius: var(--radius-lg);
+  overflow: hidden;
+}
+
+/* ---- Tooltip (Design System §21) --------------------------------- */
+.lt-tooltip-wrap {
+  position: relative;
+  display: inline-flex;
+}
+.lt-tooltip {
+  position: absolute;
+  z-index: 90;
+  background: var(--ink);
+  color: #fff;
+  font-size: 13px;
+  line-height: 1.4;
+  padding: 8px 10px;
+  border-radius: var(--radius-sm);
+  box-shadow: var(--shadow-md);
+  max-width: 240px;
+  width: max-content;
+  pointer-events: none;
+}
+.lt-tooltip[data-side='top'] {
+  bottom: calc(100% + 8px);
+  left: 50%;
+  transform: translateX(-50%);
+}
+.lt-tooltip[data-side='bottom'] {
+  top: calc(100% + 8px);
+  left: 50%;
+  transform: translateX(-50%);
+}
+.lt-tooltip::after {
+  content: '';
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  border: 5px solid transparent;
+}
+.lt-tooltip[data-side='top']::after {
+  top: 100%;
+  border-top-color: var(--ink);
+}
+.lt-tooltip[data-side='bottom']::after {
+  bottom: 100%;
+  border-bottom-color: var(--ink);
+}
+
+/* ---- Dropdown menu (Design System §7 shadow-md popover) --------- */
+.lt-menu-wrap {
+  position: relative;
+  display: inline-flex;
+}
+.lt-menu {
+  position: absolute;
+  top: calc(100% + 6px);
+  min-width: 190px;
+  background: var(--paper-raised);
+  border: 1px solid var(--slate-15);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-md);
+  padding: 4px;
+  z-index: 90;
+}
+.lt-menu[data-align='end'] {
+  right: 0;
+}
+.lt-menu[data-align='start'] {
+  left: 0;
+}
+.lt-menu-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  text-align: left;
+  background: transparent;
+  border: none;
+  padding: 8px 10px;
+  font-size: 13px;
+  color: var(--ink);
+  border-radius: var(--radius-sm);
+}
+.lt-menu-item:hover {
+  background: var(--paper);
+}
+.lt-menu-item--danger {
+  color: var(--brick);
+}
+.lt-menu-sep {
+  height: 1px;
+  background: var(--slate-10);
+  margin: 4px 0;
+}
+
+/* ---- Spinner (buttons / inline only — full-page loads use skeletons) - */
+.lt-spinner {
+  display: inline-block;
+  width: 15px;
+  height: 15px;
+  border: 2px solid currentColor;
+  border-right-color: transparent;
+  border-radius: 50%;
+  animation: lt-spin 0.7s linear infinite;
+}
+@keyframes lt-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* ---- Skeleton helpers (tokens.css ships `.skeleton`) --------------- */
+.skeleton-text {
+  height: 12px;
+  border-radius: var(--radius-xs);
+  margin: 6px 0;
+}
+
+/* ============================================================================
+   App shell — responsive sidebar + topbar controls
+   Extends the approved `.app` / `.sidebar` / `.topbar` / `.content` classes
+   from tokens.css. Desktop layout is unchanged; this only adds the <768px
+   drawer behaviour (Flagship Screens spec) and the topbar icon controls.
+   ========================================================================= */
+.sidebar {
+  position: relative;
+}
+.shell-close {
+  display: none;
+}
+.shell-hamburger {
+  display: none;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border: 1px solid var(--slate-30);
+  border-radius: var(--radius-sm);
+  background: var(--paper-raised);
+  color: var(--ink);
+}
+.shell-iconbtn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border: 1px solid var(--slate-30);
+  border-radius: var(--radius-sm);
+  background: var(--paper-raised);
+  color: var(--ink);
+  position: relative;
+}
+.shell-iconbtn:hover {
+  box-shadow: var(--shadow-sm);
+}
+.shell-dot {
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--brick);
+  border: 1.5px solid var(--paper-raised);
+}
+.shell-scrim {
+  display: none;
+}
+
+@media (max-width: 767px) {
+  .sidebar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    z-index: 60;
+    transform: translateX(-100%);
+    transition: transform 0.18s ease;
+  }
+  .sidebar.is-open {
+    transform: none;
+    box-shadow: var(--shadow-lg);
+  }
+  .sidebar .shell-close {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    position: absolute;
+    top: 16px;
+    right: 12px;
+    width: 32px;
+    height: 32px;
+    border: 1px solid rgba(255, 255, 255, 0.25);
+    border-radius: var(--radius-sm);
+    background: transparent;
+    color: #fff;
+    font-size: 14px;
+  }
+  .shell-scrim {
+    display: block;
+    position: fixed;
+    inset: 0;
+    background: rgba(28, 43, 69, 0.4);
+    z-index: 55;
+  }
+  .shell-hamburger {
+    display: inline-flex;
+  }
+  .shell-role {
+    display: none;
+  }
+  .topbar {
+    padding: 14px 16px;
+  }
+  .content {
+    padding: 20px 16px 48px;
+  }
+}
+
+/* ---- Simple foundation page frame (placeholder screens) ----------- */
+.lt-frame {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+.lt-frame-bar {
+  background: var(--ink);
+  color: #fff;
+  padding: 14px 24px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+.lt-frame-bar .wordmark {
+  font-family: var(--serif);
+  font-weight: 600;
+  font-size: 18px;
+}
+.lt-frame-bar nav {
+  display: flex;
+  gap: 14px;
+  flex-wrap: wrap;
+  font-size: 13px;
+}
+.lt-frame-bar nav a {
+  color: rgba(255, 255, 255, 0.68);
+  text-decoration: none;
+}
+.lt-frame-bar nav a:hover {
+  color: #fff;
+}
+.lt-frame-body {
+  flex: 1;
+  padding: 32px 24px 64px;
+  max-width: 1200px;
+  width: 100%;
+  margin: 0 auto;
+}

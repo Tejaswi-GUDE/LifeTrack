@@ -1,0 +1,18 @@
+module.exports = {
+  User: require('./User'),
+  Provider: require('./Provider'),
+  Course: require('./Course'),
+  JobSkillReference: require('./JobSkillReference'),
+  Trainee: require('./Trainee'),
+  OutcomeEvent: require('./OutcomeEvent'),
+  EmploymentPeriod: require('./EmploymentPeriod'),
+  IncomeCheckpoint: require('./IncomeCheckpoint'),
+  Verification: require('./Verification'),
+  SkillMatchResult: require('./SkillMatchResult'),
+  FollowupSchedule: require('./FollowupSchedule'),
+  FollowupResponse: require('./FollowupResponse'),
+  RootCause: require('./RootCause'),
+  Intervention: require('./Intervention'),
+  ConsentRecord: require('./ConsentRecord'),
+  AuditLog: require('./AuditLog'),
+};

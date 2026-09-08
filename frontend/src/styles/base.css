@@ -1,0 +1,46 @@
+/* Tailwind layers. Preflight is disabled in tailwind.config.js — the
+   approved tokens.css owns the baseline reset. We add back only the few
+   resets we actually need. */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  *,
+  *::before,
+  *::after {
+    box-sizing: border-box;
+  }
+
+  img,
+  svg,
+  video,
+  canvas {
+    max-width: 100%;
+    display: block;
+  }
+
+  /* preflight is off, so opt form controls back into the app typeface */
+  button,
+  input,
+  select,
+  textarea {
+    font-family: inherit;
+    font-size: 100%;
+    color: inherit;
+  }
+
+  button {
+    cursor: pointer;
+  }
+
+  :focus-visible {
+    outline: none;
+    box-shadow: var(--shadow-focus);
+    border-radius: var(--radius-xs);
+  }
+
+  #root {
+    min-height: 100vh;
+  }
+}

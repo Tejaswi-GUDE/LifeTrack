@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>LifeTrack — Trainee Profile</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Serif:wght@500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="tokens.css">
+<style>
+  .crumbline{font-size:12.5px;color:var(--slate);margin-bottom:14px;}
+  .crumbline a{text-decoration:none;color:var(--slate);}
+  .crumbline a:hover{color:var(--ink);}
+
+  .profile-header{background:var(--paper-raised);border:1px solid var(--slate-15);border-radius:var(--radius-md);padding:24px 28px;display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:24px;gap:20px;flex-wrap:wrap;}
+  .avatar{width:56px;height:56px;border-radius:50%;background:var(--ink);color:#fff;font-family:var(--serif);font-weight:600;font-size:20px;display:flex;align-items:center;justify-content:center;flex:0 0 56px;}
+  .ph-main{display:flex;gap:16px;align-items:flex-start;}
+  .ph-name-row{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:4px;}
+  .ph-name{font-family:var(--serif);font-weight:600;font-size:27px;}
+  .ph-meta{font-size:13px;color:var(--slate);}
+  .ph-meta .dot{margin:0 6px;}
+  .ph-id{font-family:var(--mono);font-size:11.5px;color:var(--slate);margin-top:6px;}
+  .ph-actions{display:flex;gap:10px;flex-wrap:wrap;}
+
+  .layout{display:grid;grid-template-columns:300px 1fr;gap:24px;align-items:start;}
+  .snapshot{position:sticky;top:24px;display:flex;flex-direction:column;gap:16px;}
+  .snap-row{display:flex;justify-content:space-between;font-size:13px;padding:8px 0;border-bottom:1px solid var(--slate-10);}
+  .snap-row:last-child{border-bottom:none;}
+  .snap-row .sk{color:var(--slate);}
+  .snap-row .sv{font-weight:500;text-align:right;}
+  .snap-hero{display:flex;align-items:baseline;gap:8px;margin-bottom:2px;}
+  .snap-hero .num{font-size:26px;font-weight:600;font-variant-numeric:tabular-nums;}
+  .snap-hero .delta{font-size:12px;font-weight:600;color:var(--teal);}
+  .gauge-track{width:100%;height:6px;background:var(--slate-10);border-radius:var(--radius-xs);overflow:hidden;margin-top:8px;}
+  .consent-item{display:flex;justify-content:space-between;align-items:center;font-size:12.5px;padding:5px 0;}
+  .consent-dot{width:8px;height:8px;border-radius:50%;background:var(--teal);display:inline-block;margin-right:6px;}
+
+  .timeline-toolbar{display:flex;justify-content:space-between;align-items:center;margin-bottom:18px;}
+  .timeline-toolbar h2{font-family:var(--serif);font-weight:600;font-size:19px;}
+  .chip-filter{display:flex;gap:8px;}
+  .chip{font-size:12px;padding:5px 12px;border-radius:var(--radius-pill);border:1px solid var(--slate-30);color:var(--slate);cursor:pointer;background:var(--paper-raised);}
+  .chip.active{background:var(--ink);color:#fff;border-color:var(--ink);}
+
+  .stage-label{display:inline-block;font-size:10.5px;font-weight:600;color:var(--slate);letter-spacing:.01em;margin-bottom:4px;}
+  .badges-inline{display:flex;gap:6px;margin-top:8px;flex-wrap:wrap;}
+</style>
+</head>
+<body>
+<div class="app">
+  <aside class="sidebar">
+    <div class="wordmark">LifeTrack</div>
+    <div class="role-tag">Provider Dashboard</div>
+    <nav>
+      <a>Cohort Overview</a>
+      <a>At-Risk Trainees</a>
+      <a class="active">Trainee Profiles</a>
+      <a>Course Skill Gaps</a>
+      <a>Interventions</a>
+    </nav>
+    <div class="who"><strong>Patna Livelihood Institute</strong>Admin</div>
+  </aside>
+
+  <div class="main">
+    <div class="topbar">
+      <div class="titleblock">
+        <div class="crumb">Trainee Profiles</div>
+        <h1>Trainee Record</h1>
+      </div>
+      <div class="controls">
+        <button class="btn btn-secondary">Export record</button>
+      </div>
+    </div>
+
+    <div class="content">
+      <div class="crumbline"><a href="#">Provider Dashboard</a> &nbsp;/&nbsp; <a href="#">Trainee Profiles</a> &nbsp;/&nbsp; Amit Verma</div>
+
+      <div class="profile-header">
+        <div class="ph-main">
+          <div class="avatar">AV</div>
+          <div>
+            <div class="ph-name-row">
+              <span class="ph-name">Amit Verma</span>
+              <span class="badge outline-teal">Employed</span>
+              <span class="badge neutral">Confidence: Medium</span>
+            </div>
+            <div class="ph-meta">Site Electrician · BuildRight Contractors<span class="dot">·</span>Electrician – Basic Wiring<span class="dot">·</span>Patna Livelihood Institute<span class="dot">·</span>Patna district</div>
+            <div class="ph-id">TRN-2026-0134 · Batch ELE-2026-A · Certified 200 days ago</div>
+          </div>
+        </div>
+        <div class="ph-actions">
+          <button class="btn btn-secondary">Send verification request</button>
+          <button class="btn btn-secondary">Log case note</button>
+          <button class="btn btn-primary">Message trainee</button>
+        </div>
+      </div>
+
+      <div class="layout">
+        <!-- ================= LEFT: CURRENT SNAPSHOT ================= -->
+        <div class="snapshot">
+          <div class="card">
+            <div class="card-title">Current employment</div>
+            <div class="snap-row"><span class="sk">Employer</span><span class="sv">BuildRight Contractors</span></div>
+            <div class="snap-row"><span class="sk">Role</span><span class="sv">Site Electrician</span></div>
+            <div class="snap-row"><span class="sk">Since</span><span class="sv">35 days ago</span></div>
+            <div class="snap-row"><span class="sk">Verification</span><span class="sv"><span class="badge neutral">Pending</span></span></div>
+            <div class="snap-row"><span class="sk">Job changes</span><span class="sv">1 (re-employed)</span></div>
+          </div>
+
+          <div class="card">
+            <div class="card-title">Wage progression</div>
+            <div class="snap-hero"><span class="num">₹12,000</span><span class="delta">▲ 9.1%</span></div>
+            <div class="card-sub" style="margin-bottom:0;">from ₹11,000 baseline · 3 checkpoints recorded</div>
+          </div>
+
+          <div class="card">
+            <div class="card-title">Skill relevance</div>
+            <div class="snap-hero"><span class="num">100%</span><span class="badge outline-teal">Good match</span></div>
+            <div class="gauge-track"><div style="width:100%;height:100%;background:var(--teal);"></div></div>
+            <div class="card-sub" style="margin-top:8px;margin-bottom:0;">No missing skills for Site Electrician</div>
+          </div>
+
+          <div class="card">
+            <div class="card-title">Risk</div>
+            <div class="snap-row"><span class="sk">Outcome risk</span><span class="sv" style="color:var(--teal)">10 / 100 · Low</span></div>
+            <div class="snap-row"><span class="sk">Attrition risk</span><span class="sv" style="color:var(--ochre)">25 / 100 · Low</span></div>
+          </div>
+
+          <div class="card">
+            <div class="card-title">Consent</div>
+            <div class="consent-item"><span><span class="consent-dot"></span>Data collection</span><span>Granted</span></div>
+            <div class="consent-item"><span><span class="consent-dot"></span>Employer contact</span><span>Granted</span></div>
+            <div class="consent-item"><span><span class="consent-dot"></span>Analytics use</span><span>Granted</span></div>
+          </div>
+        </div>
+
+        <!-- ================= RIGHT: THE CAREER TIMELINE ================= -->
+        <div>
+          <div class="timeline-toolbar">
+            <h2>Career Timeline</h2>
+            <div class="chip-filter">
+              <span class="chip active">All</span>
+              <span class="chip">Outcomes</span>
+              <span class="chip">Follow-ups</span>
+              <span class="chip">Verification</span>
+              <span class="chip">Interventions</span>
+            </div>
+          </div>
+
+          <div class="timeline">
+
+            <div class="t-event">
+              <div class="t-node hollow"></div>
+              <div class="t-date">21 Feb 2026</div>
+              <span class="stage-label">TRAINING</span>
+              <div class="t-card">
+                <div class="t-headline">Enrolled — Electrician: Basic Wiring</div>
+                <div class="t-detail">Batch ELE-2026-A · Patna Livelihood Institute</div>
+              </div>
+            </div>
+
+            <div class="t-event">
+              <div class="t-node"></div>
+              <div class="t-date">22 Feb 2026</div>
+              <span class="stage-label">CERTIFICATION</span>
+              <div class="t-card">
+                <div class="t-headline">Certified</div>
+                <div class="t-detail">Attendance 90% · Assessment score 78%</div>
+              </div>
+            </div>
+
+            <div class="t-event">
+              <div class="t-node sealed-teal"></div>
+              <div class="t-date">24 Mar 2026</div>
+              <span class="stage-label">PLACEMENT</span>
+              <div class="t-card">
+                <div class="t-headline">Employed — Patna Electricals Co.</div>
+                <div class="t-detail">Site Electrician · joined 30 days after certification</div>
+                <div class="badges-inline"><span class="badge solid-teal">● Employer-verified</span></div>
+              </div>
+            </div>
+
+            <div class="t-event">
+              <div class="t-node hollow"></div>
+              <div class="t-date">24 Mar 2026</div>
+              <span class="stage-label">FOLLOW-UP · DAY 30</span>
+              <div class="t-card">
+                <div class="t-headline" style="font-family:var(--sans);font-weight:500;">Follow-up completed</div>
+                <div class="t-detail">Reported employed · ₹11,000/mo · skills relevant: yes · channel: web</div>
+              </div>
+            </div>
+
+            <div class="t-event">
+              <div class="t-node hollow"></div>
+              <div class="t-date">21 Jun 2026</div>
+              <span class="stage-label">FOLLOW-UP · DAY 90</span>
+              <div class="t-card">
+                <div class="t-headline" style="font-family:var(--sans);font-weight:500;">Follow-up completed</div>
+                <div class="t-detail">₹11,500/mo · skills relevant: yes</div>
+              </div>
+            </div>
+
+            <div class="t-event">
+              <div class="t-node outline-brick"></div>
+              <div class="t-date">10 Jul 2026</div>
+              <span class="stage-label">RETENTION</span>
+              <div class="t-card">
+                <div class="t-headline">Job lost — Patna Electricals Co.</div>
+                <div class="t-detail">Reason: contract ended, project completed · tenure 108 days</div>
+                <div class="badges-inline"><span class="badge outline-brick">Verified employment ended</span></div>
+              </div>
+            </div>
+
+            <div class="t-event">
+              <div class="t-node hollow"></div>
+              <div class="t-date">29 Jul 2026</div>
+              <span class="stage-label">FOLLOW-UP · DAY 180</span>
+              <div class="t-card">
+                <div class="t-headline" style="font-family:var(--sans);font-weight:500;">Follow-up completed — assisted (field visit)</div>
+                <div class="t-detail">Reported new employer: BuildRight Contractors · ₹12,000/mo</div>
+              </div>
+            </div>
+
+            <div class="t-event">
+              <div class="t-node hollow"></div>
+              <span class="stage-label">INTERVENTION</span>
+              <div class="insight">
+                <div class="tag"><svg class="spark" viewBox="0 0 16 16" fill="currentColor"><path d="M8 0l1.6 5.4L15 7l-5.4 1.6L8 14l-1.6-5.4L1 7l5.4-1.6L8 0z"/></svg>System insight — Re-employment support</div>
+                <div class="body">Recommended following the day-180 job-loss report. Rationale: verified prior employment (108-day tenure) and strong skill match indicated fast re-employment was likely with light support.</div>
+                <div class="basis">Based on: skill match 100% on prior role, no attendance/assessment concerns, tenure &gt; 90 days.</div>
+                <div class="badges-inline" style="margin-top:10px;"><span class="badge outline-teal">Completed by Sunita Rao (Counsellor)</span></div>
+              </div>
+            </div>
+
+            <div class="t-event">
+              <div class="t-node outline-teal"></div>
+              <div class="t-date">4 Aug 2026</div>
+              <span class="stage-label">PLACEMENT (RE-EMPLOYMENT)</span>
+              <div class="t-card">
+                <div class="t-headline">Employed — BuildRight Contractors</div>
+                <div class="t-detail">Site Electrician · found within 25 days of job loss</div>
+                <div class="badges-inline">
+                  <span class="badge outline-teal">Self-reported — awaiting verification</span>
+                  <span class="badge outline-teal">Skill match 100%</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="t-event">
+              <div class="t-node hollow"></div>
+              <div class="t-date">4 Aug 2026</div>
+              <span class="stage-label">SKILL RELEVANCE</span>
+              <div class="t-card">
+                <div class="t-headline" style="font-family:var(--sans);font-weight:500;">Skill match recomputed</div>
+                <div class="t-detail">Site Electrician requires: Basic Wiring, Safety Protocols, Tool Handling, Circuit Reading — all present in training. No missing skills.</div>
+              </div>
+            </div>
+
+            <div class="t-event">
+              <div class="t-node hollow" style="opacity:.5;"></div>
+              <div class="t-date">3 Feb 2027 · upcoming</div>
+              <span class="stage-label">FOLLOW-UP · DAY 365</span>
+              <div class="t-card" style="opacity:.6;">
+                <div class="t-headline" style="font-family:var(--sans);font-weight:500;">Follow-up scheduled</div>
+                <div class="t-detail">Not yet due</div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+</body>
+</html>

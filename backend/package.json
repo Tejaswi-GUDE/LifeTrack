@@ -1,0 +1,25 @@
+{
+  "name": "lifetrack-backend",
+  "version": "1.0.0",
+  "description": "LifeTrack (SIH) - Express API over the Mongoose data layer.",
+  "main": "src/server.js",
+  "scripts": {
+    "start": "node src/server.js",
+    "dev": "node src/devServer.js",
+    "seed": "node src/seed/seed.js",
+    "verify:schema": "node src/verify/validateSchemas.js",
+    "verify:queries": "node src/verify/runQueries.js",
+    "verify": "npm run verify:schema && npm run verify:queries"
+  },
+  "license": "ISC",
+  "dependencies": {
+    "cors": "^2.8.5",
+    "dotenv": "^17.4.2",
+    "express": "^4.21.2",
+    "mongoose": "^9.9.5"
+  },
+  "devDependencies": {
+    "mingo": "^7.2.4",
+    "mongodb-memory-server": "^10.1.2"
+  }
+}

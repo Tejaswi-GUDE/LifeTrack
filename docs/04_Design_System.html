@@ -1,0 +1,559 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>LifeTrack — Design System</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Serif:wght@500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#1C2B45; --ink-70:rgba(28,43,69,.7); --ink-30:rgba(28,43,69,.30); --ink-20:rgba(28,43,69,.18); --ink-10:rgba(28,43,69,.08);
+    --paper:#F4F5F7; --paper-raised:#FFFFFF;
+    --slate:#5B6472; --slate-30:rgba(91,100,114,.30); --slate-15:rgba(91,100,114,.15); --slate-10:rgba(91,100,114,.10); --slate-tint:#E7E9EC;
+    --teal:#1F7A5C; --teal-tint:#E3F2EC;
+    --ochre:#B8811E; --ochre-tint:#FBF0DC;
+    --brick:#A33B2B; --brick-tint:#F8E6E2;
+    --plum:#6E4C8C; --plum-tint:#F1EAF6;
+    --radius-xs:4px; --radius-sm:6px; --radius-md:10px; --radius-lg:14px; --radius-pill:999px;
+    --shadow-sm:0 1px 2px rgba(28,43,69,.06);
+    --shadow-md:0 8px 24px rgba(28,43,69,.12);
+    --shadow-lg:0 16px 48px rgba(28,43,69,.18);
+    --shadow-focus:0 0 0 3px rgba(28,43,69,.18);
+    --sans:'IBM Plex Sans',sans-serif; --serif:'IBM Plex Serif',serif; --mono:'IBM Plex Mono',monospace;
+  }
+  *{box-sizing:border-box;}
+  body{margin:0;background:var(--paper);color:var(--ink);font-family:var(--sans);font-size:15px;line-height:1.55;-webkit-font-smoothing:antialiased;}
+  .shell{display:flex;min-height:100vh;}
+  /* ---- side index (mirrors the product's own sidebar language) ---- */
+  .index{width:248px;flex:0 0 248px;background:var(--ink);color:#fff;padding:28px 20px;position:sticky;top:0;height:100vh;overflow-y:auto;}
+  .index .wordmark{font-family:var(--serif);font-weight:600;font-size:20px;margin-bottom:4px;}
+  .index .tagline{font-size:12px;color:rgba(255,255,255,.55);margin-bottom:28px;}
+  .index a{display:block;color:rgba(255,255,255,.7);text-decoration:none;font-size:13.5px;padding:6px 0;border-left:2px solid transparent;padding-left:10px;margin-left:-10px;}
+  .index a:hover{color:#fff;}
+  .index .grp{color:rgba(255,255,255,.4);font-size:11px;margin:18px 0 4px;letter-spacing:.02em;}
+  main{flex:1;padding:56px 64px;max-width:1120px;}
+  section{margin-bottom:64px;scroll-margin-top:24px;}
+  h1.page-title{font-family:var(--serif);font-weight:600;font-size:34px;margin:0 0 8px;}
+  .subtitle{color:var(--slate);font-size:16px;margin:0 0 48px;max-width:640px;}
+  h2{font-family:var(--serif);font-weight:600;font-size:21px;margin:0 0 6px;}
+  .section-note{color:var(--slate);font-size:13.5px;margin:0 0 22px;max-width:680px;}
+  h3{font-family:var(--sans);font-weight:600;font-size:17px;margin:0 0 12px;}
+  .grid{display:grid;gap:16px;}
+  .cols-3{grid-template-columns:repeat(3,1fr);}
+  .cols-4{grid-template-columns:repeat(4,1fr);}
+  .cols-2{grid-template-columns:repeat(2,1fr);}
+  code{font-family:var(--mono);font-size:12.5px;background:var(--slate-tint);padding:2px 5px;border-radius:4px;}
+
+  /* swatches */
+  .swatch{border-radius:var(--radius-md);overflow:hidden;border:1px solid var(--slate-15);background:var(--paper-raised);}
+  .swatch .fill{height:64px;}
+  .swatch .meta{padding:10px 12px;}
+  .swatch .name{font-weight:600;font-size:13.5px;}
+  .swatch .hex{font-family:var(--mono);font-size:11.5px;color:var(--slate);}
+  .swatch .role{font-size:12px;color:var(--slate);margin-top:4px;}
+
+  /* type scale */
+  .type-row{display:flex;align-items:baseline;gap:20px;padding:14px 0;border-bottom:1px solid var(--slate-10);}
+  .type-row .label{width:150px;flex:0 0 150px;font-size:12px;color:var(--slate);font-family:var(--sans);}
+  .t-display{font-family:var(--serif);font-weight:600;font-size:34px;}
+  .t-h1{font-family:var(--serif);font-weight:600;font-size:27px;}
+  .t-h2{font-family:var(--serif);font-weight:600;font-size:21px;}
+  .t-h3{font-family:var(--sans);font-weight:600;font-size:17px;}
+  .t-body{font-family:var(--sans);font-weight:400;font-size:15px;}
+  .t-small{font-family:var(--sans);font-weight:400;font-size:13px;color:var(--slate);}
+  .t-caption{font-family:var(--sans);font-weight:500;font-size:12px;color:var(--slate);}
+  .t-data{font-family:var(--sans);font-weight:600;font-size:32px;font-variant-numeric:tabular-nums;}
+  .t-mono{font-family:var(--mono);font-size:13px;}
+
+  /* spacing */
+  .space-row{display:flex;align-items:center;gap:16px;margin-bottom:10px;}
+  .space-row .bar{background:var(--ink);height:14px;border-radius:3px;}
+  .space-row .lbl{width:60px;font-size:12.5px;color:var(--slate);font-family:var(--mono);}
+
+  /* radius */
+  .radius-demo{width:88px;height:88px;background:var(--paper-raised);border:1.5px solid var(--ink-30);display:flex;align-items:center;justify-content:center;font-size:11px;color:var(--slate);font-family:var(--mono);}
+
+  /* shadow */
+  .shadow-demo{width:100%;height:80px;background:var(--paper-raised);border-radius:var(--radius-md);display:flex;align-items:center;justify-content:center;font-size:12px;color:var(--slate);border:1px solid var(--slate-10);}
+
+  /* backgrounds */
+  .bg-demo{height:90px;border-radius:var(--radius-md);display:flex;align-items:center;justify-content:center;font-size:12.5px;font-family:var(--mono);}
+
+  /* cards */
+  .card{background:var(--paper-raised);border:1px solid var(--slate-15);border-radius:var(--radius-md);padding:24px;}
+  .card.accent-brick{border-left:3px solid var(--brick);}
+  .card.accent-teal{border-left:3px solid var(--teal);}
+  .card h3{margin-bottom:4px;}
+  .card p{margin:0;color:var(--slate);font-size:13.5px;}
+
+  /* buttons */
+  .btn{font-family:var(--sans);font-weight:600;font-size:14px;height:40px;padding:0 18px;border-radius:var(--radius-sm);border:none;cursor:pointer;display:inline-flex;align-items:center;gap:6px;}
+  .btn-primary{background:var(--ink);color:#fff;}
+  .btn-secondary{background:var(--paper-raised);color:var(--ink);border:1px solid var(--ink-30);}
+  .btn-ghost{background:transparent;color:var(--ink);}
+  .btn-destructive{background:var(--brick);color:#fff;}
+  .btn:focus-visible{box-shadow:var(--shadow-focus);outline:none;}
+  .btn-row{display:flex;gap:12px;flex-wrap:wrap;align-items:center;}
+
+  /* inputs */
+  .field{margin-bottom:16px;max-width:320px;}
+  .field label{display:block;font-size:12px;font-weight:500;color:var(--slate);margin-bottom:6px;}
+  .field input{width:100%;height:40px;border-radius:var(--radius-sm);border:1px solid var(--slate-30);padding:0 12px;font-family:var(--sans);font-size:15px;background:var(--paper-raised);}
+  .field input:focus{outline:none;border-color:var(--ink);box-shadow:var(--shadow-focus);}
+  .field.error input{border-color:var(--brick);}
+  .field.error .help{color:var(--brick);font-size:12.5px;margin-top:6px;}
+
+  /* table */
+  table.demo{width:100%;border-collapse:collapse;background:var(--paper-raised);border-radius:var(--radius-md);overflow:hidden;border:1px solid var(--slate-15);}
+  table.demo th{background:var(--paper);text-align:left;font-size:12px;font-weight:500;color:var(--slate);padding:10px 16px;border-bottom:1px solid var(--ink-20);}
+  table.demo td{padding:12px 16px;font-size:13.5px;border-bottom:1px solid var(--slate-10);}
+  table.demo tr:last-child td{border-bottom:none;}
+  table.demo tr:hover td{background:var(--paper);}
+  table.demo td.num{text-align:right;font-variant-numeric:tabular-nums;font-weight:500;}
+
+  /* badges */
+  .badge{display:inline-flex;align-items:center;gap:5px;border-radius:var(--radius-pill);font-size:12px;font-weight:500;padding:4px 11px;}
+  .badge.solid-teal{background:var(--teal);color:#fff;}
+  .badge.outline-teal{background:var(--teal-tint);color:var(--teal);border:1px solid var(--teal);}
+  .badge.dashed-teal{background:var(--teal-tint);color:var(--teal);border:1px dashed var(--teal);}
+  .badge.solid-brick{background:var(--brick);color:#fff;}
+  .badge.outline-brick{background:var(--brick-tint);color:var(--brick);border:1px solid var(--brick);}
+  .badge.solid-ochre{background:var(--ochre);color:#fff;}
+  .badge.outline-ochre{background:var(--ochre-tint);color:var(--ochre);border:1px solid var(--ochre);}
+  .badge.neutral{background:var(--slate-tint);color:var(--slate);}
+  .badge-row{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-bottom:10px;}
+  .badge-row .cap{width:170px;font-size:12px;color:var(--slate);}
+
+  /* alerts */
+  .alert{background:var(--paper-raised);border-radius:var(--radius-md);border:1px solid var(--slate-15);border-left:4px solid var(--brick);padding:14px 18px;display:flex;gap:12px;align-items:flex-start;}
+  .alert.warning{border-left-color:var(--ochre);}
+  .alert.positive{border-left-color:var(--teal);}
+  .alert .a-title{font-weight:600;font-size:14px;margin-bottom:2px;}
+  .alert .a-body{font-size:13px;color:var(--slate);}
+
+  /* risk */
+  .risk-bar-track{width:160px;height:5px;background:var(--slate-10);border-radius:var(--radius-xs);overflow:hidden;}
+  .risk-bar-fill{height:100%;border-radius:var(--radius-xs);}
+  .risk-row{display:flex;align-items:center;gap:12px;margin-bottom:12px;}
+  .factor-list{margin-top:16px;border-top:1px solid var(--slate-10);padding-top:12px;}
+  .factor{display:flex;justify-content:space-between;font-size:13.5px;padding:6px 0;}
+  .factor .pts{font-weight:600;font-variant-numeric:tabular-nums;color:var(--brick);}
+
+  /* AI insight */
+  .insight{background:var(--plum-tint);border-radius:var(--radius-md);padding:18px 20px;}
+  .insight .tag{display:flex;align-items:center;gap:6px;color:var(--plum);font-size:12px;font-weight:600;margin-bottom:8px;}
+  .insight .body{font-size:14px;color:var(--ink);margin-bottom:10px;}
+  .insight .basis{font-size:12.5px;color:var(--slate);}
+  .spark{width:14px;height:14px;display:inline-block;}
+
+  /* charts (static illustrative svg) */
+  .chart-card{background:var(--paper-raised);border:1px solid var(--slate-15);border-radius:var(--radius-md);padding:20px;}
+
+  /* timeline */
+  .timeline{position:relative;padding-left:32px;}
+  .timeline::before{content:'';position:absolute;left:7px;top:6px;bottom:6px;width:2px;background:var(--ink);}
+  .t-event{position:relative;margin-bottom:28px;}
+  .t-node{position:absolute;left:-32px;top:2px;width:16px;height:16px;border-radius:50%;background:var(--ink);border:3px solid var(--paper);box-shadow:0 0 0 1px var(--ink);}
+  .t-node.sealed-teal{background:var(--teal);box-shadow:0 0 0 1px var(--teal);}
+  .t-node.outline-brick{background:var(--paper);border:2px solid var(--brick);box-shadow:0 0 0 1px var(--brick);}
+  .t-node.hollow{background:var(--paper);border:2px solid var(--slate-30);box-shadow:none;}
+  .t-date{font-size:11.5px;color:var(--slate);font-family:var(--mono);margin-bottom:2px;}
+  .t-headline{font-family:var(--serif);font-weight:600;font-size:16px;margin-bottom:2px;}
+  .t-detail{font-size:13px;color:var(--slate);}
+  .t-insight{background:var(--plum-tint);border-radius:var(--radius-sm);padding:12px 14px;margin-top:6px;}
+  .t-insight .tag{color:var(--plum);font-size:11.5px;font-weight:600;display:flex;align-items:center;gap:5px;margin-bottom:4px;}
+
+  /* nav demo */
+  .nav-demo{display:flex;border-radius:var(--radius-md);overflow:hidden;border:1px solid var(--slate-15);}
+  .nav-demo .side{width:200px;background:var(--ink);color:#fff;padding:18px;}
+  .nav-demo .side .wm{font-family:var(--serif);font-weight:600;margin-bottom:16px;}
+  .nav-demo .side a{display:block;font-size:13px;color:rgba(255,255,255,.65);text-decoration:none;padding:8px 0;padding-left:10px;border-left:3px solid transparent;}
+  .nav-demo .side a.active{color:#fff;border-left-color:var(--teal);font-weight:500;}
+  .nav-demo .content{flex:1;background:var(--paper);padding:20px;}
+  .nav-demo .topbar{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;}
+  .nav-demo .topbar h1{font-family:var(--serif);font-size:18px;margin:0;}
+  .nav-demo .pill-role{font-size:11px;background:var(--slate-tint);color:var(--slate);padding:3px 10px;border-radius:var(--radius-pill);}
+
+  /* modal demo */
+  .modal-frame{background:var(--ink-10);border-radius:var(--radius-md);padding:40px;display:flex;justify-content:center;}
+  .modal-box{background:var(--paper-raised);border-radius:var(--radius-lg);box-shadow:var(--shadow-lg);width:420px;padding:24px;}
+  .modal-box h2{font-size:18px;margin-bottom:8px;}
+  .modal-box p{font-size:13.5px;color:var(--slate);margin:0 0 20px;}
+  .modal-footer{display:flex;justify-content:flex-end;gap:10px;}
+
+  /* tooltip demo */
+  .tooltip-demo{position:relative;display:inline-block;}
+  .tooltip-bubble{position:absolute;top:-40px;left:50%;transform:translateX(-50%);background:var(--ink);color:#fff;font-size:12px;padding:7px 11px;border-radius:var(--radius-sm);box-shadow:var(--shadow-md);white-space:nowrap;}
+  .tooltip-bubble::after{content:'';position:absolute;top:100%;left:50%;transform:translateX(-50%);border:5px solid transparent;border-top-color:var(--ink);}
+
+  /* states */
+  .state-card{background:var(--paper-raised);border:1px solid var(--slate-15);border-radius:var(--radius-md);padding:32px;text-align:center;}
+  .skeleton{background:linear-gradient(90deg, var(--slate-10) 25%, var(--slate-15) 37%, var(--slate-10) 63%);background-size:400% 100%;animation:shimmer 1.6s ease infinite;border-radius:var(--radius-sm);}
+  @keyframes shimmer{0%{background-position:100% 0;}100%{background-position:0 0;}}
+</style>
+</head>
+<body>
+<div class="shell">
+  <nav class="index">
+    <div class="wordmark">LifeTrack</div>
+    <div class="tagline">Design System v1</div>
+    <a href="#concept">0. Concept</a>
+    <a href="#colors">1. Color Palette</a>
+    <a href="#semantics">2. Color Semantics</a>
+    <a href="#type">3. Typography</a>
+    <a href="#hierarchy">4. Font Hierarchy</a>
+    <a href="#spacing">5. Spacing</a>
+    <a href="#radius">6. Border Radius</a>
+    <a href="#shadows">7. Shadows</a>
+    <a href="#backgrounds">8. Backgrounds</a>
+    <div class="grp">COMPONENTS</div>
+    <a href="#cards">9. Cards</a>
+    <a href="#buttons">10. Buttons</a>
+    <a href="#inputs">11. Inputs</a>
+    <a href="#tables">12. Tables</a>
+    <a href="#badges">13. Badges</a>
+    <a href="#alerts">14. Alerts</a>
+    <a href="#risk">15. Risk Indicators</a>
+    <a href="#insight">16. AI Insight</a>
+    <a href="#charts">17. Charts</a>
+    <a href="#timeline">18. Timeline (hero)</a>
+    <a href="#nav">19. Navigation</a>
+    <a href="#modals">20. Modals</a>
+    <a href="#tooltips">21. Tooltips</a>
+    <a href="#states">22. Empty/Loading/Error</a>
+  </nav>
+
+  <main>
+    <h1 class="page-title">LifeTrack Design System</h1>
+    <p class="subtitle">A premium, government-ready visual language for a longitudinal livelihood-outcomes platform. Built on one idea: this product is a living public record, not a SaaS dashboard.</p>
+
+    <section id="concept">
+      <h2>0. Concept — "The Ledger"</h2>
+      <p class="section-note">The organizing metaphor: an official case ledger, not a startup dashboard. Verification = a stamp. Self-reported data = a handwritten note. The trainee timeline = a bound record's spine. Every token below serves this idea.</p>
+      <div class="card">
+        <p style="color:var(--ink);font-size:14px;">A government tracks a citizen's livelihood the way a registrar keeps a case file: dated entries, some officially stamped, some provisional, accumulating over years. That's the reference object for this entire system — not analytics software.</p>
+      </div>
+    </section>
+
+    <section id="colors">
+      <h2>1. Color Palette</h2>
+      <p class="section-note">Six named colors plus ink/paper neutrals. Restrained on purpose — the same six colors must mean the same thing on five different dashboards.</p>
+      <div class="grid cols-4">
+        <div class="swatch"><div class="fill" style="background:var(--ink)"></div><div class="meta"><div class="name">Ink</div><div class="hex">#1C2B45</div><div class="role">Brand / chrome / seal</div></div></div>
+        <div class="swatch"><div class="fill" style="background:var(--paper);border-bottom:1px solid var(--slate-15)"></div><div class="meta"><div class="name">Paper</div><div class="hex">#F4F5F7</div><div class="role">Canvas background</div></div></div>
+        <div class="swatch"><div class="fill" style="background:var(--slate)"></div><div class="meta"><div class="name">Slate</div><div class="hex">#5B6472</div><div class="role">Neutral / secondary text</div></div></div>
+        <div class="swatch"><div class="fill" style="background:var(--teal)"></div><div class="meta"><div class="name">Teal</div><div class="hex">#1F7A5C</div><div class="role">Positive outcome</div></div></div>
+        <div class="swatch"><div class="fill" style="background:var(--ochre)"></div><div class="meta"><div class="name">Ochre</div><div class="hex">#B8811E</div><div class="role">Warning</div></div></div>
+        <div class="swatch"><div class="fill" style="background:var(--brick)"></div><div class="meta"><div class="name">Brick</div><div class="hex">#A33B2B</div><div class="role">Risk</div></div></div>
+        <div class="swatch"><div class="fill" style="background:var(--plum)"></div><div class="meta"><div class="name">Plum</div><div class="hex">#6E4C8C</div><div class="role">AI-generated insight only</div></div></div>
+        <div class="swatch"><div class="fill" style="background:#fff;border-bottom:1px solid var(--slate-15)"></div><div class="meta"><div class="name">Paper-raised</div><div class="hex">#FFFFFF</div><div class="role">Cards / panels</div></div></div>
+      </div>
+    </section>
+
+    <section id="semantics">
+      <h2>2. How Color Communicates</h2>
+      <p class="section-note">Two independent questions, two independent visual answers: hue = sentiment, fill-style = confidence. This is why "Employed" can look three different ways.</p>
+      <div class="grid cols-2">
+        <div class="card">
+          <h3>Question A — What happened? (hue)</h3>
+          <div class="badge-row"><span class="cap">Positive outcome</span><span class="badge outline-teal">Teal</span></div>
+          <div class="badge-row"><span class="cap">Risk</span><span class="badge outline-brick">Brick</span></div>
+          <div class="badge-row"><span class="cap">Warning</span><span class="badge outline-ochre">Ochre</span></div>
+          <div class="badge-row"><span class="cap">Neutral</span><span class="badge neutral">Slate</span></div>
+          <div class="badge-row"><span class="cap">AI-generated insight</span><span class="badge" style="background:var(--plum-tint);color:var(--plum);border:1px solid var(--plum);">Plum</span></div>
+        </div>
+        <div class="card">
+          <h3>Question B — How sure are we? (fill style)</h3>
+          <div class="badge-row"><span class="cap">Verified</span><span class="badge solid-teal">● Employed</span></div>
+          <div class="badge-row"><span class="cap">Self-reported</span><span class="badge outline-teal">Employed</span></div>
+          <div class="badge-row"><span class="cap">Needs review</span><span class="badge dashed-teal">⚑ Employed</span></div>
+        </div>
+      </div>
+    </section>
+
+    <section id="type">
+      <h2>3. Typography</h2>
+      <p class="section-note">One superfamily, two cuts. Plex Serif marks anything about a person's recorded history (names, timeline headlines); Plex Sans handles all system chrome. Plex Mono appears only on literal ID codes.</p>
+      <div class="grid cols-3">
+        <div class="card"><div class="t-h2" style="margin-bottom:8px;">Plex Serif</div><p>Trainee names, page titles, timeline headlines. Carries the "ledger" warmth.</p></div>
+        <div class="card"><div class="t-h3" style="margin-bottom:8px;">Plex Sans</div><p>All UI chrome, body text, tables, buttons, nav, data.</p></div>
+        <div class="card"><div class="t-mono" style="margin-bottom:8px;">Plex Mono</div><p>Trainee ID / verification reference codes only — never decorative labels.</p></div>
+      </div>
+    </section>
+
+    <section id="hierarchy">
+      <h2>4. Font Hierarchy</h2>
+      <p class="section-note">Modular scale, base 15px, ratio ≈1.25 — dense-dashboard-appropriate. No all-caps anywhere.</p>
+      <div class="type-row"><div class="label">Display / 34px</div><div class="t-display">Outcome Impact, 2026</div></div>
+      <div class="type-row"><div class="label">H1 / 27px</div><div class="t-h1">Priya Kumari</div></div>
+      <div class="type-row"><div class="label">H2 / 21px</div><div class="t-h2">Employment &amp; Retention</div></div>
+      <div class="type-row"><div class="label">H3 / 17px</div><div class="t-h3">At-risk trainees</div></div>
+      <div class="type-row"><div class="label">Body / 15px</div><div class="t-body">Certified 52 days ago, no placement recorded yet.</div></div>
+      <div class="type-row"><div class="label">Body-small / 13px</div><div class="t-small">Last updated 3 days ago via web follow-up</div></div>
+      <div class="type-row"><div class="label">Caption / 12px</div><div class="t-caption">Checkpoint day</div></div>
+      <div class="type-row"><div class="label">Data-lg / 32px</div><div class="t-data">62.5%</div></div>
+      <div class="type-row"><div class="label">Mono / 13px</div><div class="t-mono">TRN-2026-0417</div></div>
+    </section>
+
+    <section id="spacing">
+      <h2>5. Spacing System</h2>
+      <p class="section-note">4px base unit. Same scale for padding, gaps and layout margins everywhere.</p>
+      <div class="space-row"><span class="lbl">4px</span><div class="bar" style="width:4px;"></div></div>
+      <div class="space-row"><span class="lbl">8px</span><div class="bar" style="width:8px;"></div></div>
+      <div class="space-row"><span class="lbl">12px</span><div class="bar" style="width:12px;"></div></div>
+      <div class="space-row"><span class="lbl">16px</span><div class="bar" style="width:16px;"></div></div>
+      <div class="space-row"><span class="lbl">24px</span><div class="bar" style="width:24px;"></div></div>
+      <div class="space-row"><span class="lbl">32px</span><div class="bar" style="width:32px;"></div></div>
+      <div class="space-row"><span class="lbl">48px</span><div class="bar" style="width:48px;"></div></div>
+      <div class="space-row"><span class="lbl">64px</span><div class="bar" style="width:64px;"></div></div>
+      <div class="space-row"><span class="lbl">96px</span><div class="bar" style="width:96px;"></div></div>
+    </section>
+
+    <section id="radius">
+      <h2>6. Border Radius</h2>
+      <p class="section-note">Radius communicates hierarchy — not one radius on every element.</p>
+      <div class="grid cols-4">
+        <div><div class="radius-demo" style="border-radius:4px;">xs · 4px</div></div>
+        <div><div class="radius-demo" style="border-radius:6px;">sm · 6px</div></div>
+        <div><div class="radius-demo" style="border-radius:10px;">md · 10px</div></div>
+        <div><div class="radius-demo" style="border-radius:14px;">lg · 14px</div></div>
+      </div>
+    </section>
+
+    <section id="shadows">
+      <h2>7. Shadows</h2>
+      <p class="section-note">Elevation only — most surfaces are flat with a hairline border and no shadow at rest.</p>
+      <div class="grid cols-3">
+        <div class="shadow-demo" style="box-shadow:none;border-style:solid;">none — cards at rest</div>
+        <div class="shadow-demo" style="box-shadow:var(--shadow-md);">md — dropdowns / tooltips</div>
+        <div class="shadow-demo" style="box-shadow:var(--shadow-lg);">lg — modals only</div>
+      </div>
+    </section>
+
+    <section id="backgrounds">
+      <h2>8. Backgrounds</h2>
+      <p class="section-note">Three flat layers. No gradients, no textures, anywhere in the system.</p>
+      <div class="grid cols-3">
+        <div class="bg-demo" style="background:var(--paper);color:var(--slate);border:1px solid var(--slate-15);">--paper (canvas)</div>
+        <div class="bg-demo" style="background:var(--paper-raised);color:var(--slate);border:1px solid var(--slate-15);">--paper-raised (cards)</div>
+        <div class="bg-demo" style="background:var(--ink);color:#fff;">--ink (nav shell only)</div>
+      </div>
+    </section>
+
+    <section id="cards">
+      <h2>9. Cards</h2>
+      <p class="section-note">Flat surface, hairline border, no shadow at rest. Sentiment shown by a 2px left-edge accent, not a full-color fill.</p>
+      <div class="grid cols-3">
+        <div class="card"><h3>Cohort overview</h3><p>Standard card — used for any grouped content.</p></div>
+        <div class="card accent-brick"><h3>Ravi Oraon</h3><p>At-risk left-edge accent — brick, single signal.</p></div>
+        <div class="card accent-teal"><h3>Priya Kumari</h3><p>Positive-outcome left-edge accent — teal.</p></div>
+      </div>
+    </section>
+
+    <section id="buttons">
+      <h2>10. Buttons</h2>
+      <p class="section-note">One shape language, four emphasis levels. No arrows appended to labels.</p>
+      <div class="btn-row">
+        <button class="btn btn-primary">Approve intervention</button>
+        <button class="btn btn-secondary">View details</button>
+        <button class="btn btn-ghost">Dismiss</button>
+        <button class="btn btn-destructive">Dispute claim</button>
+      </div>
+    </section>
+
+    <section id="inputs">
+      <h2>11. Inputs</h2>
+      <p class="section-note">Label above field, sentence case. Error state pairs color with an explicit message — never color alone.</p>
+      <div class="field">
+        <label>Monthly income (₹)</label>
+        <input type="text" placeholder="e.g. 12000">
+      </div>
+      <div class="field error">
+        <label>Employer name</label>
+        <input type="text" value="">
+        <div class="help">Employer name is required to send a verification request.</div>
+      </div>
+    </section>
+
+    <section id="tables">
+      <h2>12. Tables</h2>
+      <p class="section-note">No vertical grid lines. Status always renders as a badge, never plain colored text.</p>
+      <table class="demo">
+        <thead><tr><th>Trainee</th><th>Status</th><th>Risk</th><th class="num">Monthly income</th></tr></thead>
+        <tbody>
+          <tr><td>Priya Kumari</td><td><span class="badge solid-teal">● Employed</span></td><td class="num">5</td><td class="num">₹13,500</td></tr>
+          <tr><td>Ravi Oraon</td><td><span class="badge neutral">Unemployed</span></td><td class="num" style="color:var(--brick);">85</td><td class="num">—</td></tr>
+          <tr><td>Sana Khatoon</td><td><span class="badge outline-teal">Employed</span></td><td class="num" style="color:var(--ochre);">20</td><td class="num">₹9,500</td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section id="badges">
+      <h2>13. Badges</h2>
+      <p class="section-note">The most-reused component — sentiment (hue) × confidence (fill style), always together.</p>
+      <div class="badge-row"><span class="cap">Verified / Positive</span><span class="badge solid-teal">● Employed</span></div>
+      <div class="badge-row"><span class="cap">Self-reported / Positive</span><span class="badge outline-teal">Employed</span></div>
+      <div class="badge-row"><span class="cap">Needs review / Positive</span><span class="badge dashed-teal">⚑ Employed</span></div>
+      <div class="badge-row"><span class="cap">Verified / Risk</span><span class="badge solid-brick">● Job lost</span></div>
+      <div class="badge-row"><span class="cap">Self-reported / Warning</span><span class="badge outline-ochre">Skill mismatch</span></div>
+      <div class="badge-row"><span class="cap">Neutral</span><span class="badge neutral">Certified — no outcome yet</span></div>
+    </section>
+
+    <section id="alerts">
+      <h2>14. Alerts</h2>
+      <p class="section-note">Left-accent banner, always naming the specific fact that triggered it.</p>
+      <div class="grid" style="gap:12px;">
+        <div class="alert"><div><div class="a-title">Ranchi district placement rate dropped 8 points</div><div class="a-body">vs. previous cohort — driven mainly by skill mismatch in Data Entry &amp; Office Assistant.</div></div></div>
+        <div class="alert warning"><div><div class="a-title">3 verification requests pending over 14 days</div><div class="a-body">BrightRetail Pvt Ltd, QuickBooks Data Solutions, CityMart Stores.</div></div></div>
+        <div class="alert positive"><div><div class="a-title">Cohort placement rate up 6 points this week</div><div class="a-body">Following 4 completed bridge-course interventions.</div></div></div>
+      </div>
+    </section>
+
+    <section id="risk">
+      <h2>15. Risk Indicators</h2>
+      <p class="section-note">Compact bar for lists; expanded score + non-negotiable factor list on the trainee profile — never collapsed into a tooltip.</p>
+      <h3 style="margin-top:8px;">Compact (worklist)</h3>
+      <div class="risk-row"><div class="risk-bar-track"><div class="risk-bar-fill" style="width:85%;background:var(--brick);"></div></div><span class="t-body" style="font-weight:600;">85 · High</span></div>
+      <div class="risk-row"><div class="risk-bar-track"><div class="risk-bar-fill" style="width:20%;background:var(--teal);"></div></div><span class="t-body" style="font-weight:600;">20 · Low</span></div>
+      <h3>Expanded (trainee profile)</h3>
+      <div class="card" style="max-width:420px;">
+        <div class="t-data" style="color:var(--brick);">85<span style="font-size:16px;color:var(--slate);font-weight:500;"> / 100 · High</span></div>
+        <div class="factor-list">
+          <div class="factor"><span>No placement 52 days after certification</span><span class="pts">+30</span></div>
+          <div class="factor"><span>Missed most recent follow-up</span><span class="pts">+15</span></div>
+          <div class="factor"><span>Assessment score 42% (below 50%)</span><span class="pts">+20</span></div>
+          <div class="factor"><span>Attendance 64% (below 70%)</span><span class="pts">+20</span></div>
+        </div>
+      </div>
+    </section>
+
+    <section id="insight">
+      <h2>16. AI Insight Components</h2>
+      <p class="section-note">Plum is used nowhere else in the system — the moment it appears, the reader knows this is a system inference, not a fact.</p>
+      <div class="insight" style="max-width:520px;">
+        <div class="tag"><svg class="spark" viewBox="0 0 16 16" fill="currentColor"><path d="M8 0l1.6 5.4L15 7l-5.4 1.6L8 14l-1.6-5.4L1 7l5.4-1.6L8 0z"/></svg> System insight</div>
+        <div class="body">Recommended: Bridge Course Referral (Advanced Excel) — root cause is skill mismatch, and this is the most frequently missing skill in this cohort.</div>
+        <div class="basis">Based on: skill match 30%, missing skill "MS Excel", 3 similar cases this cohort.</div>
+      </div>
+    </section>
+
+    <section id="charts">
+      <h2>17. Charts</h2>
+      <p class="section-note">Chart color always maps to the fixed semantic palette — never a default rainbow.</p>
+      <div class="chart-card">
+        <svg viewBox="0 0 460 160" width="100%" height="160">
+          <!-- gridlines -->
+          <line x1="40" y1="10" x2="440" y2="10" stroke="var(--slate)" stroke-opacity="0.12"/>
+          <line x1="40" y1="60" x2="440" y2="60" stroke="var(--slate)" stroke-opacity="0.12"/>
+          <line x1="40" y1="110" x2="440" y2="110" stroke="var(--slate)" stroke-opacity="0.12"/>
+          <!-- wage line, ink -> teal once trending up -->
+          <polyline points="40,100 140,95 240,70 340,40 440,25" fill="none" stroke="#1F7A5C" stroke-width="2.5"/>
+          <circle cx="40" cy="100" r="3.5" fill="#1F7A5C"/><circle cx="140" cy="95" r="3.5" fill="#1F7A5C"/>
+          <circle cx="240" cy="70" r="3.5" fill="#1F7A5C"/><circle cx="340" cy="40" r="3.5" fill="#1F7A5C"/><circle cx="440" cy="25" r="3.5" fill="#1F7A5C"/>
+          <text x="40" y="140" font-family="IBM Plex Sans" font-size="11" fill="#5B6472">Day 0</text>
+          <text x="380" y="140" font-family="IBM Plex Sans" font-size="11" fill="#5B6472">Day 180</text>
+        </svg>
+        <div class="t-caption">Wage progression — Fatima Begum (self-employed), ₹6,000 → ₹10,500</div>
+      </div>
+    </section>
+
+    <section id="timeline">
+      <h2>18. Timeline Component — the hero element</h2>
+      <p class="section-note">The one place this system spends its visual boldness: a solid ledger spine, sealed vs. outlined vs. hollow nodes for confidence, serif headlines for recorded facts, Plum panels for system inferences — all on one continuous line.</p>
+      <div class="timeline">
+        <div class="t-event">
+          <div class="t-node"></div>
+          <div class="t-date">12 Feb 2026</div>
+          <div class="t-headline">Certified — Data Entry &amp; Office Assistant</div>
+          <div class="t-detail">Attendance 64% · Assessment 42%</div>
+        </div>
+        <div class="t-event">
+          <div class="t-node outline-brick"></div>
+          <div class="t-date">18 Jul 2026</div>
+          <div class="t-headline">Unemployed — self-reported</div>
+          <div class="t-detail">30-day follow-up · web</div>
+        </div>
+        <div class="t-event">
+          <div class="t-node hollow"></div>
+          <div class="t-date">19 Aug 2026</div>
+          <div class="t-headline" style="font-family:var(--sans);font-weight:500;color:var(--slate);">Root cause determined</div>
+          <div class="t-insight">
+            <div class="tag"><svg class="spark" viewBox="0 0 16 16" fill="currentColor"><path d="M8 0l1.6 5.4L15 7l-5.4 1.6L8 14l-1.6-5.4L1 7l5.4-1.6L8 0z"/></svg>System insight</div>
+            Skill mismatch (inferred) — Advanced Excel referral recommended.
+          </div>
+        </div>
+        <div class="t-event">
+          <div class="t-node sealed-teal"></div>
+          <div class="t-date">2 Sep 2026</div>
+          <div class="t-headline">Employed — verified</div>
+          <div class="t-detail">Employer-confirmed 2 Sep 2026 · Skill match 82%</div>
+        </div>
+      </div>
+    </section>
+
+    <section id="nav">
+      <h2>19. Navigation / Sidebar</h2>
+      <p class="section-note">Fixed ink sidebar across all five dashboards — same width, same component, only nav items change per role.</p>
+      <div class="nav-demo">
+        <div class="side">
+          <div class="wm">LifeTrack</div>
+          <a class="active">Worklist</a>
+          <a>Trainee profiles</a>
+          <a>Case notes</a>
+        </div>
+        <div class="content">
+          <div class="topbar"><h1>Counsellor Worklist</h1><span class="pill-role">Sunita Rao · Counsellor</span></div>
+          <div class="t-small">At-risk trainees, sorted by risk score</div>
+        </div>
+      </div>
+    </section>
+
+    <section id="modals">
+      <h2>20. Modals</h2>
+      <p class="section-note">Reserved for actions with consequence. Secondary then Primary, left to right.</p>
+      <div class="modal-frame">
+        <div class="modal-box">
+          <h2>Approve recommended intervention?</h2>
+          <p>Bridge Course Referral (Advanced Excel) will be assigned to Ravi Oraon and logged on his profile.</p>
+          <div class="modal-footer">
+            <button class="btn btn-secondary">Cancel</button>
+            <button class="btn btn-primary">Approve</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="tooltips">
+      <h2>21. Tooltips</h2>
+      <p class="section-note">Supplementary only — required information (risk factors, insight data) is never hidden in a tooltip.</p>
+      <div class="tooltip-demo">
+        <span class="badge neutral" style="cursor:default;">OFF-2026-A</span>
+        <div class="tooltip-bubble">Batch: Office Assistant, Cohort A, Ranchi</div>
+      </div>
+    </section>
+
+    <section id="states">
+      <h2>22. Empty / Loading / Error States</h2>
+      <p class="section-note">Emptiness is an invitation to act; errors state what failed and how to recover — never a generic message.</p>
+      <div class="grid cols-3">
+        <div class="state-card">
+          <div class="t-body" style="margin-bottom:10px;">No follow-up responses yet for this checkpoint.</div>
+          <button class="btn btn-secondary" style="height:34px;font-size:13px;">Send reminder now</button>
+        </div>
+        <div class="state-card" style="text-align:left;">
+          <div class="skeleton" style="height:14px;width:70%;margin-bottom:10px;"></div>
+          <div class="skeleton" style="height:14px;width:90%;margin-bottom:10px;"></div>
+          <div class="skeleton" style="height:14px;width:50%;"></div>
+        </div>
+        <div class="alert" style="text-align:left;">
+          <div><div class="a-title">Couldn't load this trainee's records</div><div class="a-body">Retry, or check the connection and try again.</div></div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+</div>
+</body>
+</html>

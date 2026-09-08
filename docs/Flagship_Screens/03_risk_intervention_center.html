@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>LifeTrack — Risk &amp; Intervention Center</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Serif:wght@500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="tokens.css">
+<style>
+  .center-layout{display:grid;grid-template-columns:440px 1fr;gap:0;background:var(--paper-raised);border:1px solid var(--slate-15);border-radius:var(--radius-md);overflow:hidden;min-height:640px;}
+  .list-pane{border-right:1px solid var(--slate-15);display:flex;flex-direction:column;}
+  .list-toolbar{padding:16px 18px;border-bottom:1px solid var(--slate-15);display:flex;flex-direction:column;gap:10px;}
+  .list-toolbar .row1{display:flex;gap:8px;}
+  .list-count{font-size:12px;color:var(--slate);padding:10px 18px 0;}
+  .list-rows{overflow-y:auto;}
+  .lrow{padding:14px 18px;border-bottom:1px solid var(--slate-10);cursor:pointer;display:flex;flex-direction:column;gap:6px;}
+  .lrow:hover{background:var(--paper);}
+  .lrow.selected{background:var(--teal-tint);border-left:3px solid var(--teal);padding-left:15px;}
+  .lrow .lname{font-weight:600;font-size:14px;}
+  .lrow .lmeta{font-size:11.5px;color:var(--slate);}
+  .lrow .lrisk{display:flex;align-items:center;gap:8px;margin-top:2px;}
+  .lrow .lrisk .score{font-size:12.5px;font-weight:600;font-variant-numeric:tabular-nums;}
+
+  .detail-pane{padding:26px 30px;overflow-y:auto;}
+  .detail-header{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:22px;flex-wrap:wrap;gap:14px;}
+  .detail-name{font-family:var(--serif);font-weight:600;font-size:24px;margin-bottom:4px;}
+  .detail-meta{font-size:12.5px;color:var(--slate);}
+  .review-status{display:flex;align-items:center;gap:8px;background:var(--paper);border:1px solid var(--slate-15);border-radius:var(--radius-pill);padding:6px 14px;font-size:12.5px;}
+  .review-dot{width:8px;height:8px;border-radius:50%;background:var(--ochre);}
+
+  .risk-hero{display:flex;align-items:center;gap:28px;margin-bottom:22px;}
+  .risk-num{font-size:46px;font-weight:600;font-variant-numeric:tabular-nums;color:var(--brick);line-height:1;}
+  .risk-num .of{font-size:16px;color:var(--slate);font-weight:500;}
+  .risk-band{margin-top:4px;}
+
+  .section-title{font-family:var(--serif);font-weight:600;font-size:16px;margin:26px 0 12px;}
+  .section-title:first-of-type{margin-top:0;}
+
+  .mismatch-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;}
+  .chip-skill{display:inline-block;background:var(--brick-tint);color:var(--brick);font-size:12px;padding:4px 10px;border-radius:var(--radius-pill);margin:0 6px 6px 0;}
+
+  .action-row{display:flex;gap:10px;margin-top:18px;}
+</style>
+</head>
+<body>
+<div class="app">
+  <aside class="sidebar">
+    <div class="wordmark">LifeTrack</div>
+    <div class="role-tag">Counsellor</div>
+    <nav>
+      <a class="active">Risk &amp; Intervention Center</a>
+      <a>Trainee Profiles</a>
+      <a>Case Notes</a>
+    </nav>
+    <div class="who"><strong>Sunita Rao</strong>Counsellor</div>
+  </aside>
+
+  <div class="main">
+    <div class="topbar">
+      <div class="titleblock">
+        <div class="crumb">Risk &amp; Intervention Center</div>
+        <h1>Outcome Risk &amp; Intervention Center</h1>
+      </div>
+      <div class="controls">
+        <div class="seg"><button class="active">All risk</button><button>High</button><button>Medium</button><button>Low</button></div>
+        <select class="select"><option>All statuses</option><option>At-risk</option><option>Non-responsive</option><option>Needs verification review</option></select>
+      </div>
+    </div>
+
+    <div class="content">
+      <div class="center-layout">
+
+        <!-- ============= LEFT: MASTER LIST ============= -->
+        <div class="list-pane">
+          <div class="list-toolbar">
+            <div class="row1"><div class="search" style="flex:1;"><input placeholder="Search trainees…" style="width:100%;"></div></div>
+          </div>
+          <div class="list-count">8 trainees · sorted by risk score</div>
+          <div class="list-rows">
+            <div class="lrow selected">
+              <div class="lname">Ravi Oraon</div>
+              <div class="lmeta">Data Entry &amp; Office Assistant · Ranchi · Unemployed</div>
+              <div class="lrisk"><div class="risk-bar-track"><div class="risk-bar-fill" style="width:85%;background:var(--brick);"></div></div><span class="score">85 · High</span></div>
+            </div>
+            <div class="lrow">
+              <div class="lname">Deepak Mahato</div>
+              <div class="lmeta">Electrician – Basic Wiring · Patna · Not responding</div>
+              <div class="lrisk"><div class="risk-bar-track"><div class="risk-bar-fill" style="width:65%;background:var(--ochre);"></div></div><span class="score">65 · Medium</span></div>
+            </div>
+            <div class="lrow">
+              <div class="lname">Neha Devi</div>
+              <div class="lmeta">Retail Sales Associate · Ranchi · Employed (disputed)</div>
+              <div class="lrisk"><div class="risk-bar-track"><div class="risk-bar-fill" style="width:30%;background:var(--teal);"></div></div><span class="score">30 · Low</span></div>
+            </div>
+            <div class="lrow">
+              <div class="lname">Sana Khatoon</div>
+              <div class="lmeta">Data Entry &amp; Office Assistant · Ranchi · Employed</div>
+              <div class="lrisk"><div class="risk-bar-track"><div class="risk-bar-fill" style="width:20%;background:var(--teal);"></div></div><span class="score">20 · Low</span></div>
+            </div>
+            <div class="lrow">
+              <div class="lname">Amit Verma</div>
+              <div class="lmeta">Electrician – Basic Wiring · Patna · Employed</div>
+              <div class="lrisk"><div class="risk-bar-track"><div class="risk-bar-fill" style="width:10%;background:var(--teal);"></div></div><span class="score">10 · Low</span></div>
+            </div>
+            <div class="lrow">
+              <div class="lname">Priya Kumari</div>
+              <div class="lmeta">Retail Sales Associate · Ranchi · Employed</div>
+              <div class="lrisk"><div class="risk-bar-track"><div class="risk-bar-fill" style="width:5%;background:var(--teal);"></div></div><span class="score">5 · Low</span></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ============= RIGHT: DETAIL ============= -->
+        <div class="detail-pane">
+          <div class="detail-header">
+            <div>
+              <div class="detail-name">Ravi Oraon</div>
+              <div class="detail-meta">Data Entry &amp; Office Assistant · Ranchi Skill Mission Center · Certified 52 days ago · <span class="badge neutral">Unemployed</span></div>
+            </div>
+            <div class="review-status"><span class="review-dot"></span>Awaiting counsellor review</div>
+          </div>
+
+          <div class="section-title">Outcome Risk</div>
+          <div class="risk-hero">
+            <div class="risk-num">85<span class="of"> / 100</span></div>
+            <div>
+              <div class="risk-band"><span class="badge outline-brick">High risk</span></div>
+              <div class="card-sub" style="margin:6px 0 0;">Computed 1 day ago</div>
+            </div>
+          </div>
+          <div class="factor-list">
+            <div class="factor"><span>No placement 52 days after certification</span><span class="pts" style="color:var(--brick)">+30</span></div>
+            <div class="factor"><span>Missed most recent follow-up engagement</span><span class="pts" style="color:var(--brick)">+15</span></div>
+            <div class="factor"><span>Assessment score 42% (below 50%)</span><span class="pts" style="color:var(--brick)">+20</span></div>
+            <div class="factor"><span>Attendance 64% (below 70%)</span><span class="pts" style="color:var(--brick)">+20</span></div>
+          </div>
+
+          <div class="section-title">Root Cause</div>
+          <div class="card">
+            <div style="display:flex;justify-content:space-between;align-items:center;">
+              <div><strong>Skill mismatch</strong> <span class="card-sub" style="display:inline;">— no employer/job data available yet</span></div>
+              <span class="badge plum">Inferred — needs confirmation</span>
+            </div>
+          </div>
+
+          <div class="section-title">Skill Mismatch — Course Feedback</div>
+          <div class="mismatch-grid">
+            <div class="card">
+              <div class="card-title">Course teaches</div>
+              <span class="chip-skill" style="background:var(--teal-tint);color:var(--teal);">Typing Speed</span>
+              <span class="chip-skill" style="background:var(--teal-tint);color:var(--teal);">MS Word</span>
+              <span class="chip-skill" style="background:var(--teal-tint);color:var(--teal);">Basic Filing</span>
+              <span class="chip-skill" style="background:var(--teal-tint);color:var(--teal);">Communication</span>
+            </div>
+            <div class="card">
+              <div class="card-title">Data Entry Operator requires</div>
+              <span class="chip-skill" style="background:var(--teal-tint);color:var(--teal);">Typing Speed</span>
+              <span class="chip-skill">MS Excel</span>
+              <span class="chip-skill" style="background:var(--teal-tint);color:var(--teal);">Basic Filing</span>
+              <span class="chip-skill" style="background:var(--teal-tint);color:var(--teal);">Communication</span>
+              <div class="card-sub" style="margin-top:6px;">Missing: <strong style="color:var(--brick);">MS Excel</strong> — most frequently missing skill in this cohort</div>
+            </div>
+          </div>
+
+          <div class="section-title">Recommended Intervention</div>
+          <div class="insight">
+            <div class="tag"><svg class="spark" viewBox="0 0 16 16" fill="currentColor"><path d="M8 0l1.6 5.4L15 7l-5.4 1.6L8 14l-1.6-5.4L1 7l5.4-1.6L8 0z"/></svg>System insight</div>
+            <div class="body">Bridge Course Referral — Advanced Excel. Root cause is skill mismatch (inferred), and MS Excel is the most frequently missing skill in this cohort.</div>
+            <div class="basis">Based on: skill match unavailable (no job yet), course skill-gap rollup for Data Entry &amp; Office Assistant, 1 similar case this cohort.</div>
+          </div>
+
+          <div class="action-row">
+            <button class="btn btn-secondary">Dismiss</button>
+            <button class="btn btn-secondary">Reassign</button>
+            <button class="btn btn-primary">Approve intervention</button>
+          </div>
+
+          <div class="section-title">Case Notes</div>
+          <div class="card">
+            <div class="card-sub" style="margin-bottom:10px;">No case notes yet.</div>
+            <button class="btn btn-ghost btn-sm">＋ Add note</button>
+          </div>
+
+          <div style="margin-top:18px;"><a href="#" style="font-size:13px;font-weight:600;color:var(--ink);text-decoration:none;">View full profile &amp; timeline →</a></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+</body>
+</html>
