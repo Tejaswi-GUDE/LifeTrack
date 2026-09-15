@@ -15,6 +15,8 @@ import { cn } from '../../lib/cn';
  *   showConfidence: also render a companion "Confidence: X" chip
  */
 const STATUS_META = {
+  in_training: { tone: 'slate', label: 'In training' },
+  dropped_out: { tone: 'brick', label: 'Dropped out' },
   certified_no_outcome: { tone: 'slate', label: 'Certified — no outcome yet' },
   employed: { tone: 'teal', label: 'Employed' },
   self_employed: { tone: 'teal', label: 'Self-employed' },

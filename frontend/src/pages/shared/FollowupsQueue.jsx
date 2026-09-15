@@ -111,7 +111,7 @@ export default function FollowupsQueue() {
                       <div className="dl-sub">{f.course}</div>
                     </Table.Cell>
                   )}
-                  <Table.Cell numeric>Day {f.checkpointDay}</Table.Cell>
+                  <Table.Cell numeric>{f.checkpointDay ? `Day ${f.checkpointDay}` : 'Requested'}</Table.Cell>
                   <Table.Cell>{fmtDate(f.scheduledDate)}</Table.Cell>
                   <Table.Cell><Badge variant={b.variant}>{b.label}</Badge></Table.Cell>
                   <Table.Cell>

@@ -1,18 +1,56 @@
 const router = require('express').Router();
 const mongoose = require('mongoose');
 const {
-  Trainee, Course, FollowupSchedule, FollowupResponse, AuditLog,
+  Trainee, Course, EmploymentPeriod, JobSkillReference,
+  FollowupSchedule, FollowupResponse, AuditLog,
 } = require('../models');
+const { buildSkillIntel } = require('../lib/skillIntel');
 
-// The 3–5 question conversational check-in set (PRD §12).
-const QUESTION_SET = [
+// The conversational check-in (PRD §12). The skills question is injected
+// dynamically per trainee (see resolveQuestions) — it lists the skills their
+// current/target role needs and asks which they already have.
+const BASE_QUESTIONS = [
   { id: 'status', type: 'choice', prompt: 'Are you currently…', options: ['employed', 'self_employed', 'apprentice', 'studying', 'unemployed'] },
   { id: 'employerName', type: 'text', prompt: 'What is your current employer / business name?', showIf: { status: ['employed', 'self_employed', 'apprentice'] } },
   { id: 'role', type: 'text', prompt: 'What is your role?', showIf: { status: ['employed', 'self_employed', 'apprentice'] } },
   { id: 'monthlyIncome', type: 'number', prompt: 'What is your current monthly income? (optional)' },
-  { id: 'skillsRelevant', type: 'choice', prompt: 'Does your work use the skills from your training?', options: ['yes', 'partially', 'no'], showIf: { status: ['employed', 'self_employed', 'apprentice'] } },
+  // <- skills question injected here (index 4)
   { id: 'nonPlacementReason', type: 'choice', prompt: 'What is the main reason?', options: ['no suitable openings', 'salary mismatch', 'failed interviews', 'location / relocation', 'pursuing further study', 'personal reasons', 'other'], showIf: { status: ['unemployed', 'studying'] } },
 ];
+
+const lc = (s) => String(s || '').toLowerCase();
+
+async function resolveSkillContext(trainee) {
+  const [course, activePeriod, jobRefs] = await Promise.all([
+    Course.findById(trainee.courseId).lean(),
+    EmploymentPeriod.findOne({ traineeId: trainee._id, endDate: null }).lean(),
+    JobSkillReference.find().lean(),
+  ]);
+  const intel = buildSkillIntel({ trainee, course, activePeriod, jobRefs });
+  const skillOptions = intel.required.length ? intel.required : intel.taught;
+  return { intel, skillOptions };
+}
+
+function resolveQuestions(skillOptions, targetOccupation) {
+  const questions = BASE_QUESTIONS.slice();
+  const skillQuestion = skillOptions.length
+    ? {
+        id: 'skillsHave',
+        type: 'multiselect',
+        prompt: `Which of the skills ${targetOccupation ? `${targetOccupation} needs` : 'your job needs'} do you already have? (tick all that apply)`,
+        options: skillOptions,
+        showIf: { status: ['employed', 'self_employed', 'apprentice'] },
+      }
+    : {
+        id: 'skillsRelevant',
+        type: 'choice',
+        prompt: 'Does your work use the skills from your training?',
+        options: ['yes', 'partially', 'no'],
+        showIf: { status: ['employed', 'self_employed', 'apprentice'] },
+      };
+  questions.splice(4, 0, skillQuestion);
+  return questions;
+}
 
 // A pending check-in is "due" once it is overdue OR falls inside the next
 // 30-day action window (the window a counsellor/provider actually works from);
@@ -55,6 +93,9 @@ router.get('/', async (req, res, next) => {
         course: t ? (cmap.get(String(t.courseId)) || {}).name || null : null,
         district: t ? t.district : null,
         checkpointDay: s.checkpointDay,
+        adhoc: !!s.adhoc,
+        note: s.note || null,
+        requestedByRole: s.requestedByRole || null,
         scheduledDate: s.scheduledDate,
         status: derivedStatus(s, now),
         rawStatus: s.status,
@@ -78,6 +119,53 @@ router.get('/', async (req, res, next) => {
   }
 });
 
+// POST /api/followups  { traineeId, note?, requestedByRole? }
+// A provider/counsellor asks a trainee to complete a check-in now. Creates an
+// ad-hoc pending schedule dated today, so it shows immediately as "Due" in the
+// trainee's follow-ups and can be answered with the normal check-in form.
+router.post('/', async (req, res, next) => {
+  try {
+    const { traineeId, note, requestedByRole = 'provider' } = req.body || {};
+    if (!mongoose.isValidObjectId(traineeId)) {
+      const e = new Error('A valid traineeId is required');
+      e.status = 400;
+      throw e;
+    }
+    const trainee = await Trainee.findById(traineeId).lean();
+    if (!trainee) {
+      const e = new Error('Trainee not found');
+      e.status = 404;
+      throw e;
+    }
+    const role = ['provider', 'counsellor', 'government'].includes(requestedByRole) ? requestedByRole : 'provider';
+    const schedule = await FollowupSchedule.create({
+      traineeId,
+      checkpointDay: null,
+      adhoc: true,
+      requestedByRole: role,
+      note: note && String(note).trim() ? String(note).trim().slice(0, 500) : null,
+      scheduledDate: new Date(),
+      status: 'pending',
+    });
+    await AuditLog.create({
+      entity: 'FollowupSchedule', entityId: schedule._id, action: 'followup_requested', actorRole: role,
+    });
+    res.status(201).json({
+      followup: {
+        id: String(schedule._id),
+        traineeId: String(schedule.traineeId),
+        traineeName: trainee.name,
+        adhoc: true,
+        note: schedule.note,
+        scheduledDate: schedule.scheduledDate,
+        status: 'due',
+      },
+    });
+  } catch (err) {
+    next(err);
+  }
+});
+
 // GET /api/followups/:scheduleId/questions
 router.get('/:scheduleId/questions', async (req, res, next) => {
   try {
@@ -93,13 +181,17 @@ router.get('/:scheduleId/questions', async (req, res, next) => {
       throw e;
     }
     const t = await Trainee.findById(s.traineeId).lean();
+    const { intel, skillOptions } = t ? await resolveSkillContext(t) : { intel: {}, skillOptions: [] };
     res.json({
       scheduleId: String(s._id),
       checkpointDay: s.checkpointDay,
       scheduledDate: s.scheduledDate,
       status: s.status,
       traineeName: t ? t.name : null,
-      questions: QUESTION_SET,
+      targetOccupation: intel.targetOccupation || null,
+      requiredSkills: skillOptions,
+      skillsAlreadyHeld: intel.has || [],
+      questions: resolveQuestions(skillOptions, intel.targetOccupation),
     });
   } catch (err) {
     next(err);
@@ -121,6 +213,28 @@ router.post('/:scheduleId/response', async (req, res, next) => {
       throw e;
     }
     const { channel = 'web', answers = {}, actorRole = 'trainee' } = req.body;
+
+    const skillsHave = Array.isArray(answers.skillsHave)
+      ? [...new Set(answers.skillsHave.filter((x) => typeof x === 'string' && x.trim()).map((x) => x.trim()))]
+      : null;
+
+    // derive the old yes/partially/no rating from the ticked skills
+    let skillsRelevant = ['yes', 'partially', 'no'].includes(answers.skillsRelevant) ? answers.skillsRelevant : null;
+    if (skillsHave) {
+      const trainee = await Trainee.findById(schedule.traineeId).lean();
+      const { intel } = trainee ? await resolveSkillContext(trainee) : { intel: { required: [] } };
+      const req0 = (intel.required || []).map(lc);
+      if (req0.length) {
+        const haveLc = new Set(skillsHave.map(lc));
+        const covered = req0.filter((s) => haveLc.has(s)).length;
+        skillsRelevant = covered === req0.length ? 'yes' : covered > 0 ? 'partially' : 'no';
+      }
+      // grow the trainee's held-skills list
+      if (skillsHave.length) {
+        await Trainee.updateOne({ _id: schedule.traineeId }, { $addToSet: { skills: { $each: skillsHave } } });
+      }
+    }
+
     const response = await FollowupResponse.create({
       scheduleId: schedule._id,
       traineeId: schedule.traineeId,
@@ -131,7 +245,8 @@ router.post('/:scheduleId/response', async (req, res, next) => {
         role: answers.role || null,
         startDate: answers.startDate || null,
         monthlyIncome: answers.monthlyIncome != null && answers.monthlyIncome !== '' ? Number(answers.monthlyIncome) : null,
-        skillsRelevant: ['yes', 'partially', 'no'].includes(answers.skillsRelevant) ? answers.skillsRelevant : null,
+        skillsHave: skillsHave && skillsHave.length ? skillsHave : undefined,
+        skillsRelevant,
         nonPlacementReason: answers.nonPlacementReason || null,
       },
       submittedDate: new Date(),

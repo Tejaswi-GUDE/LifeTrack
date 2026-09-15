@@ -25,6 +25,8 @@ const INTERVENTION_LABELS = {
 };
 
 const STATUS_LABELS = {
+  in_training: 'In training',
+  dropped_out: 'Dropped out',
   certified_no_outcome: 'Certified — no outcome yet',
   employed: 'Employed',
   self_employed: 'Self-employed',
@@ -43,6 +45,21 @@ const CONSENT_PURPOSE_LABELS = {
   analytics: 'Analytics use',
 };
 
+const REQUEST_CATEGORY_LABELS = {
+  counselling: 'Counselling / guidance',
+  placement_help: 'Help finding a job',
+  skill_support: 'Skill / bridge-course support',
+  record_update: 'Update my record',
+  grievance: 'Grievance',
+  other: 'Other',
+};
+
+const REQUEST_STATUS_LABELS = {
+  open: 'Open',
+  in_progress: 'In progress',
+  resolved: 'Resolved',
+};
+
 const label = (map, key, fallback) => map[key] || fallback || key;
 
 module.exports = {
@@ -51,5 +68,7 @@ module.exports = {
   STATUS_LABELS,
   CONFIDENCE_LABELS,
   CONSENT_PURPOSE_LABELS,
+  REQUEST_CATEGORY_LABELS,
+  REQUEST_STATUS_LABELS,
   label,
 };

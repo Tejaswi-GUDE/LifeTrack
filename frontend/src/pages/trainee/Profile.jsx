@@ -2,6 +2,7 @@ import { useMemo, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import './profile.css';
 import { useApi } from '../../hooks/useApi';
+import { apiSend } from '../../api/client';
 import { useSession } from '../../context/SessionContext';
 import { useTopbarActions } from '../../components/shell/TopbarSlot';
 import Card from '../../components/ui/Card';
@@ -10,9 +11,13 @@ import Badge from '../../components/ui/Badge';
 import StatusBadge from '../../components/ui/StatusBadge';
 import Modal from '../../components/ui/Modal';
 import Dropdown from '../../components/ui/Dropdown';
+import Input from '../../components/ui/Input';
+import Select from '../../components/ui/Select';
+import Alert from '../../components/ui/Alert';
 import ErrorState from '../../components/ui/ErrorState';
 import { Skeleton } from '../../components/ui/Loading';
 import Timeline from '../../components/Timeline';
+import SkillIntel from '../../components/SkillIntel';
 
 const inr = (n) => `₹${Number(n).toLocaleString('en-IN')}`;
 const cap = (s) => (s ? s[0].toUpperCase() + s.slice(1) : s);
@@ -92,6 +97,80 @@ export default function TraineeProfile() {
   const { role } = useSession();
   const { data, error, loading, reload } = useApi(`/trainees/${id}`);
   const [modal, setModal] = useState(null);
+  const [busy, setBusy] = useState(false);
+  const [formError, setFormError] = useState(null);
+  const [toast, setToast] = useState(null);
+  const [empForm, setEmpForm] = useState({ employerName: '', occupation: '', kind: 'employment', startDate: '', monthlyIncome: '', requestVerification: true });
+  const [incForm, setIncForm] = useState({ amountInr: '', checkpointDay: '90' });
+  const [followNote, setFollowNote] = useState('');
+
+  const openModal = (m) => {
+    setFormError(null);
+    setToast(null);
+    if (m === 'employment') setEmpForm({ employerName: '', occupation: '', kind: 'employment', startDate: '', monthlyIncome: '', requestVerification: true });
+    if (m === 'income') setIncForm({ amountInr: '', checkpointDay: '90' });
+    if (m === 'follow') setFollowNote('');
+    setModal(m);
+  };
+  const closeModal = () => { if (!busy) setModal(null); };
+
+  const submitEmployment = async () => {
+    if (!empForm.employerName.trim() || !empForm.occupation.trim()) { setFormError('Employer and role are required.'); return; }
+    setBusy(true); setFormError(null);
+    try {
+      const r = await apiSend('POST', `/trainees/${id}/employment`, {
+        employerName: empForm.employerName.trim(),
+        occupation: empForm.occupation.trim(),
+        kind: empForm.kind,
+        startDate: empForm.startDate || undefined,
+        monthlyIncome: empForm.monthlyIncome || undefined,
+        requestVerification: empForm.kind === 'employment' && empForm.requestVerification,
+        actorRole: role || 'provider',
+      });
+      setModal(null);
+      setToast(`Employment at ${empForm.employerName.trim()} recorded${r.verificationRequested ? ' · verification request sent' : ''}.`);
+      reload();
+    } catch (e) { setFormError(e.message); } finally { setBusy(false); }
+  };
+
+  const submitIncome = async () => {
+    if (!incForm.amountInr || Number(incForm.amountInr) <= 0) { setFormError('Enter a monthly amount in ₹.'); return; }
+    setBusy(true); setFormError(null);
+    try {
+      await apiSend('POST', `/trainees/${id}/income`, {
+        amountInr: Number(incForm.amountInr),
+        checkpointDay: Number(incForm.checkpointDay),
+        actorRole: role || 'provider',
+      });
+      setModal(null);
+      setToast(`Income checkpoint (day ${incForm.checkpointDay}) recorded.`);
+      reload();
+    } catch (e) { setFormError(e.message); } finally { setBusy(false); }
+  };
+
+  const submitFollow = async () => {
+    setBusy(true); setFormError(null);
+    try {
+      await apiSend('POST', '/followups', {
+        traineeId: id,
+        note: followNote.trim() || undefined,
+        requestedByRole: role === 'counsellor' ? 'counsellor' : 'provider',
+      });
+      setModal(null);
+      setToast('Follow-up request sent — it now shows as due in the trainee’s follow-ups.');
+      reload();
+    } catch (e) { setFormError(e.message); } finally { setBusy(false); }
+  };
+
+  const submitVerification = async () => {
+    setBusy(true); setFormError(null);
+    try {
+      const r = await apiSend('POST', `/trainees/${id}/verification-request`, { actorRole: role || 'provider' });
+      setModal(null);
+      setToast(r.alreadyPending ? 'A verification request is already pending for this job.' : 'Verification request sent to the employer.');
+      reload();
+    } catch (e) { setFormError(e.message); } finally { setBusy(false); }
+  };
 
   const exportRecord = () => {
     if (!data) return;
@@ -161,22 +240,18 @@ export default function TraineeProfile() {
           : { variant: 'neutral', text: 'Not sent' }
     : null;
 
-  const sendVerifDisabled = emp && emp.verificationStatus === 'pending';
+  const sendVerifDisabled = !emp || emp.verificationStatus === 'pending' || emp.verificationStatus === 'confirmed';
 
   const actionButtons = (
     <>
-      <Button
-        variant="secondary"
-        disabled={sendVerifDisabled}
-        onClick={() => setModal('verify')}
-      >
-        {sendVerifDisabled ? 'Verification pending' : 'Send verification request'}
+      <Button variant="secondary" onClick={() => openModal('follow')}>
+        Request follow-up
       </Button>
-      <Button variant="secondary" onClick={() => setModal('note')}>
-        Log case note
+      <Button variant="secondary" onClick={() => openModal('income')}>
+        Record income
       </Button>
-      <Button variant="primary" onClick={() => setModal('message')}>
-        Message trainee
+      <Button variant="primary" onClick={() => openModal('employment')}>
+        Add employment
       </Button>
     </>
   );
@@ -214,15 +289,38 @@ export default function TraineeProfile() {
             label="Actions"
             align="end"
             items={[
-              { label: sendVerifDisabled ? 'Verification pending' : 'Send verification request', disabled: sendVerifDisabled, onSelect: () => setModal('verify') },
-              { label: 'Log case note', onSelect: () => setModal('note') },
-              { label: 'Message trainee', onSelect: () => setModal('message') },
+              { label: 'Add employment', onSelect: () => openModal('employment') },
+              { label: 'Record income', onSelect: () => openModal('income') },
+              { label: 'Request follow-up', onSelect: () => openModal('follow') },
+              {
+                label: sendVerifDisabled
+                  ? (emp && emp.verificationStatus === 'confirmed' ? 'Employment verified' : emp ? 'Verification pending' : 'No active job to verify')
+                  : 'Send verification request',
+                disabled: sendVerifDisabled,
+                onSelect: () => openModal('verify'),
+              },
               { separator: true },
               { label: 'Export record', onSelect: exportRecord },
             ]}
           />
         </div>
       </div>
+
+      {toast && (
+        <div style={{ marginBottom: 16 }}>
+          <Alert
+            tone="positive"
+            title="Saved"
+            action={
+              <Button variant="ghost" size="sm" onClick={() => setToast(null)}>
+                Dismiss
+              </Button>
+            }
+          >
+            {toast}
+          </Alert>
+        </div>
+      )}
 
       <div className="layout">
         {/* ---------------- SNAPSHOT ---------------- */}
@@ -332,6 +430,14 @@ export default function TraineeProfile() {
               </div>
             ))}
           </Card>
+
+          {data.counsellor && (
+            <Card title="Assigned counsellor">
+              <div className="snap-row"><span className="sk">Name</span><span className="sv">{data.counsellor.name}</span></div>
+              {data.counsellor.phone && <div className="snap-row"><span className="sk">Phone</span><span className="sv">{data.counsellor.phone}</span></div>}
+              {data.counsellor.availability && <div className="snap-row"><span className="sk">Available</span><span className="sv">{data.counsellor.availability}</span></div>}
+            </Card>
+          )}
         </div>
 
         {/* ---------------- TIMELINE ---------------- */}
@@ -340,25 +446,115 @@ export default function TraineeProfile() {
         </div>
       </div>
 
+      {data.skillIntel && (
+        <Card style={{ marginTop: 20 }}>
+          <SkillIntel intel={data.skillIntel} />
+        </Card>
+      )}
+
       <Modal
         open={modal != null}
-        onClose={() => setModal(null)}
+        onClose={closeModal}
         title={
-          modal === 'verify'
-            ? 'Send verification request'
-            : modal === 'note'
-              ? 'Log case note'
-              : 'Message trainee'
+          modal === 'employment' ? 'Add employment record'
+            : modal === 'income' ? 'Record income checkpoint'
+              : modal === 'follow' ? 'Request a follow-up check-in'
+                : 'Send verification request'
         }
         footer={
-          <Button variant="secondary" onClick={() => setModal(null)}>
-            Close
-          </Button>
+          modal === 'employment' ? (
+            <>
+              <Button variant="secondary" onClick={closeModal} disabled={busy}>Cancel</Button>
+              <Button variant="primary" onClick={submitEmployment} loading={busy}>Save employment</Button>
+            </>
+          ) : modal === 'income' ? (
+            <>
+              <Button variant="secondary" onClick={closeModal} disabled={busy}>Cancel</Button>
+              <Button variant="primary" onClick={submitIncome} loading={busy}>Save checkpoint</Button>
+            </>
+          ) : modal === 'follow' ? (
+            <>
+              <Button variant="secondary" onClick={closeModal} disabled={busy}>Cancel</Button>
+              <Button variant="primary" onClick={submitFollow} loading={busy}>Send request</Button>
+            </>
+          ) : (
+            <>
+              <Button variant="secondary" onClick={closeModal} disabled={busy}>Cancel</Button>
+              <Button variant="primary" onClick={submitVerification} loading={busy}>Send request</Button>
+            </>
+          )
         }
       >
-        <p style={{ margin: 0 }}>
-          This action will be available in a later step. The trainee profile is read-only for now.
-        </p>
+        {modal === 'employment' && (
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+            <Input label="Employer / business name" value={empForm.employerName}
+              onChange={(e) => setEmpForm((f) => ({ ...f, employerName: e.target.value }))} placeholder="e.g. BrightRetail Pvt Ltd" />
+            <Input label="Role / occupation" value={empForm.occupation}
+              onChange={(e) => setEmpForm((f) => ({ ...f, occupation: e.target.value }))} placeholder="e.g. Sales Associate" />
+            <Select label="Type" size="field" value={empForm.kind}
+              onChange={(e) => setEmpForm((f) => ({ ...f, kind: e.target.value }))}
+              options={[
+                { value: 'employment', label: 'Employment' },
+                { value: 'self_employment', label: 'Self-employment' },
+                { value: 'apprenticeship', label: 'Apprenticeship' },
+              ]} />
+            <Input label="Start date" type="date" value={empForm.startDate}
+              onChange={(e) => setEmpForm((f) => ({ ...f, startDate: e.target.value }))} helperText="Leave blank for today" />
+            <Input label="Monthly income (₹, optional)" type="number" value={empForm.monthlyIncome}
+              onChange={(e) => setEmpForm((f) => ({ ...f, monthlyIncome: e.target.value }))} placeholder="e.g. 12000" />
+            {empForm.kind === 'employment' && (
+              <label style={{ display: 'flex', alignItems: 'center', gap: 8, fontSize: 13 }}>
+                <input type="checkbox" checked={empForm.requestVerification}
+                  onChange={(e) => setEmpForm((f) => ({ ...f, requestVerification: e.target.checked }))} />
+                Also send an employer verification request
+              </label>
+            )}
+            <p className="card-sub" style={{ margin: 0 }}>
+              This adds the job to the career timeline, updates the trainee’s current status, and refreshes every dashboard.
+            </p>
+          </div>
+        )}
+
+        {modal === 'income' && (
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+            <Input label="Monthly income (₹)" type="number" value={incForm.amountInr}
+              onChange={(e) => setIncForm((f) => ({ ...f, amountInr: e.target.value }))} placeholder="e.g. 13500" />
+            <Select label="Checkpoint" size="field" value={incForm.checkpointDay}
+              onChange={(e) => setIncForm((f) => ({ ...f, checkpointDay: e.target.value }))}
+              options={[
+                { value: '0', label: 'Baseline (day 0)' },
+                { value: '30', label: 'Day 30' },
+                { value: '90', label: 'Day 90' },
+                { value: '180', label: 'Day 180' },
+                { value: '365', label: 'Day 365' },
+              ]} />
+            <p className="card-sub" style={{ margin: 0 }}>
+              Feeds the wage-progression sparkline and the wage-growth KPIs.
+            </p>
+          </div>
+        )}
+
+        {modal === 'follow' && (
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+            <p style={{ margin: 0, fontSize: 13 }}>
+              Ask <strong>{t.name}</strong> to complete a check-in now. It appears immediately as <strong>Due</strong> in their
+              Follow-ups; when they answer, the response lands on this timeline.
+            </p>
+            <Input label="Note to the trainee (optional)" multiline rows={3} value={followNote}
+              onChange={(e) => setFollowNote(e.target.value)} placeholder="e.g. Please confirm your current employer and salary." />
+          </div>
+        )}
+
+        {modal === 'verify' && (
+          <p style={{ margin: 0, fontSize: 13 }}>
+            Send a verification request to <strong>{emp ? emp.employerName : 'the employer'}</strong> for the current role
+            {emp ? ` (${emp.occupation})` : ''}. They receive a link to confirm or dispute it.
+          </p>
+        )}
+
+        {formError && (
+          <p className="card-sub" style={{ color: 'var(--brick)', marginTop: 12 }}>{formError}</p>
+        )}
       </Modal>
     </>
   );

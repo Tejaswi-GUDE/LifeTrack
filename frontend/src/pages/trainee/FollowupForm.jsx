@@ -34,6 +34,11 @@ export default function FollowupForm() {
   if (!data) return null;
 
   const set = (id, v) => setAnswers((a) => ({ ...a, [id]: v }));
+  const toggleMulti = (id, opt) =>
+    setAnswers((a) => {
+      const cur = Array.isArray(a[id]) ? a[id] : [];
+      return { ...a, [id]: cur.includes(opt) ? cur.filter((x) => x !== opt) : [...cur, opt] };
+    });
 
   const submit = async () => {
     setSubmitting(true);
@@ -65,8 +70,8 @@ export default function FollowupForm() {
   return (
     <div style={{ maxWidth: 560 }}>
       <Card
-        title={`Day ${data.checkpointDay} check-in`}
-        subtitle={`Scheduled ${fmtDate(data.scheduledDate)}${data.traineeName ? ` · ${data.traineeName}` : ''}`}
+        title={data.checkpointDay ? `Day ${data.checkpointDay} check-in` : 'Check-in request'}
+        subtitle={`${data.checkpointDay ? 'Scheduled' : 'Requested'} ${fmtDate(data.scheduledDate)}${data.traineeName ? ` · ${data.traineeName}` : ''}`}
       >
         <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
           {visible.map((q) => (
@@ -84,6 +89,21 @@ export default function FollowupForm() {
                     <option key={o} value={o}>{o.replace(/_/g, ' ')}</option>
                   ))}
                 </select>
+              ) : q.type === 'multiselect' ? (
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+                  {q.options.map((o) => {
+                    const checked = Array.isArray(answers[q.id]) && answers[q.id].includes(o);
+                    return (
+                      <label key={o} style={{ display: 'flex', alignItems: 'center', gap: 8, fontSize: 13 }}>
+                        <input type="checkbox" checked={checked} onChange={() => toggleMulti(q.id, o)} />
+                        {o}
+                      </label>
+                    );
+                  })}
+                  <span className="dash-note">
+                    Leave a skill unticked if you don’t have it yet — we’ll suggest how to learn it.
+                  </span>
+                </div>
               ) : (
                 <Input
                   id={`q-${q.id}`}

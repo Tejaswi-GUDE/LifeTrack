@@ -12,19 +12,24 @@ import { createPortal } from 'react-dom';
  */
 export default function Modal({ open, onClose, title, footer, wide = false, children }) {
   const panelRef = useRef(null);
+  // keep the latest onClose without making the open-effect depend on it —
+  // otherwise a parent re-render (e.g. on every keystroke in a form field)
+  // re-runs the effect and its focus() call steals focus from the field.
+  const onCloseRef = useRef(onClose);
+  onCloseRef.current = onClose;
 
   useEffect(() => {
     if (!open) return undefined;
     const onKey = (e) => {
-      if (e.key === 'Escape') onClose?.();
+      if (e.key === 'Escape') onCloseRef.current?.();
     };
     document.addEventListener('keydown', onKey);
     const prevOverflow = document.body.style.overflow;
     document.body.style.overflow = 'hidden';
-    // move focus into the dialog
+    // move focus into the dialog — once, when it opens
     const t = window.setTimeout(() => {
       const focusable = panelRef.current?.querySelector(
-        'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])',
+        'input, select, textarea, button, [href], [tabindex]:not([tabindex="-1"])',
       );
       focusable?.focus();
     }, 0);
@@ -33,7 +38,7 @@ export default function Modal({ open, onClose, title, footer, wide = false, chil
       document.body.style.overflow = prevOverflow;
       window.clearTimeout(t);
     };
-  }, [open, onClose]);
+  }, [open]);
 
   if (!open) return null;
 

@@ -50,10 +50,12 @@ const NAV_BY_ROLE = {
       match: ['/provider/skill-gaps', '/provider/course'],
     },
     { label: 'Analytics', to: '/provider/analytics' },
+    { label: 'Requests', to: '/provider/requests' },
     { label: 'Settings / Consent', to: '/provider/settings' },
   ],
   counsellor: [
     { label: 'Risk & Interventions', to: '/counsellor/worklist' },
+    { label: 'Requests', to: '/counsellor/requests' },
     { label: 'Trainees', to: '/counsellor/trainees', match: ['/counsellor/trainees', '/counsellor/trainee'] },
     { label: 'Follow-ups', to: '/counsellor/followups' },
     { label: 'Settings / Consent', to: '/counsellor/settings' },
@@ -62,6 +64,7 @@ const NAV_BY_ROLE = {
     { label: 'Overview', to: '/trainee/home' },
     { label: 'Career Timeline', to: '/trainee/timeline' },
     { label: 'Follow-ups', to: '/trainee/followups', match: ['/trainee/followups', '/trainee/followup'] },
+    { label: 'My Requests', to: '/trainee/requests' },
     { label: 'Consent', to: '/trainee/consent' },
   ],
   employer: [
@@ -103,9 +106,11 @@ const META_EXACT = {
   '/provider/interventions': { crumb: 'Risk & Interventions', title: 'Intervention Log' },
   '/provider/skill-gaps': { crumb: 'Skill Intelligence', title: 'Course Skill Gaps' },
   '/provider/analytics': { crumb: 'Analytics', title: 'Outcome Analytics' },
+  '/provider/requests': { crumb: 'Requests', title: 'Trainee Requests' },
   '/provider/settings': { crumb: 'Settings / Consent', title: 'Settings' },
   // counsellor
   '/counsellor/worklist': { crumb: 'Risk & Interventions', title: 'Outcome Risk & Intervention Center' },
+  '/counsellor/requests': { crumb: 'Requests', title: 'Counselling Requests' },
   '/counsellor/trainees': { crumb: 'Trainees', title: 'Trainee Profiles' },
   '/counsellor/followups': { crumb: 'Follow-ups', title: 'Follow-up Queue' },
   '/counsellor/settings': { crumb: 'Settings / Consent', title: 'Settings' },
@@ -113,6 +118,7 @@ const META_EXACT = {
   '/trainee/home': { crumb: 'Overview', title: 'My Career' },
   '/trainee/timeline': { crumb: 'Career Timeline', title: 'My Career Timeline' },
   '/trainee/followups': { crumb: 'Follow-ups', title: 'My Follow-ups' },
+  '/trainee/requests': { crumb: 'My Requests', title: 'My Requests' },
   '/trainee/consent': { crumb: 'Consent', title: 'Consent Controls' },
   // employer
   '/employer/dashboard': { crumb: 'Overview', title: 'Employer Dashboard' },

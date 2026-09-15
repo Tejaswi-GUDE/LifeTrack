@@ -16,6 +16,10 @@ const UserSchema = new Schema(
     },
     scopeRef: { type: Schema.Types.ObjectId, default: null }, // providerId or traineeId depending on role
     email: { type: String, trim: true, lowercase: true },
+    phone: { type: String, trim: true, default: null },
+    // for counsellors: the courses whose trainees route to this counsellor
+    assignedCourseIds: [{ type: Schema.Types.ObjectId, ref: 'Course' }],
+    availability: { type: String, trim: true, default: null }, // e.g. "Mon–Fri, 10am–5pm"
   },
   { timestamps: true }
 );

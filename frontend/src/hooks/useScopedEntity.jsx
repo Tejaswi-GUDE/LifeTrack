@@ -15,6 +15,7 @@ const CFG = {
   provider: { path: '/providers', key: 'providers', idField: 'id', labelField: 'name', sessionKey: 'providerId', nameKey: 'providerName' },
   employer: { path: '/employers', key: 'employers', idField: 'name', labelField: 'name', sessionKey: 'employer', nameKey: 'employer' },
   trainee: { path: '/trainees', key: 'trainees', idField: 'id', labelField: 'name', sessionKey: 'traineeId', nameKey: 'traineeName' },
+  counsellor: { path: '/counsellors', key: 'counsellors', idField: 'id', labelField: 'name', sessionKey: 'counsellorId', nameKey: 'counsellorName' },
 };
 
 export function useScopedEntity(kind) {

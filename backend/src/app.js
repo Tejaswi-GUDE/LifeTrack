@@ -10,6 +10,7 @@ const interventionRoutes = require('./routes/interventions.routes');
 const followupRoutes = require('./routes/followups.routes');
 const verificationRoutes = require('./routes/verifications.routes');
 const courseRoutes = require('./routes/courses.routes');
+const requestRoutes = require('./routes/requests.routes');
 const adminRoutes = require('./routes/admin.routes');
 const { notFound, errorHandler } = require('./middleware/error');
 
@@ -27,6 +28,7 @@ app.use('/api/interventions', interventionRoutes);
 app.use('/api/followups', followupRoutes);
 app.use('/api/verifications', verificationRoutes);
 app.use('/api/courses', courseRoutes);
+app.use('/api/requests', requestRoutes);
 app.use('/api/admin', adminRoutes);
 
 app.use(notFound);

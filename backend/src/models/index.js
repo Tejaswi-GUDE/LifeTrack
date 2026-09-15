@@ -14,5 +14,6 @@ module.exports = {
   RootCause: require('./RootCause'),
   Intervention: require('./Intervention'),
   ConsentRecord: require('./ConsentRecord'),
+  SupportRequest: require('./SupportRequest'),
   AuditLog: require('./AuditLog'),
 };

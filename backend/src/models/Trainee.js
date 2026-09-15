@@ -30,10 +30,16 @@ const TraineeSchema = new Schema(
       certificationDate: { type: Date, default: null },
     },
 
+    // Skills the trainee actually has. Seeded from the course's skillTags and
+    // then grown as they self-report holding a skill in a follow-up check-in.
+    skills: { type: [String], default: [] },
+
     // --- Current-state snapshot (recomputed by the Outcome/Intelligence engines) ---
     currentStatus: {
       type: String,
       enum: [
+        'in_training', // enrolled, course not finished
+        'dropped_out', // left the course before completing
         'certified_no_outcome', // certified, no outcome_event yet
         'employed',
         'self_employed',

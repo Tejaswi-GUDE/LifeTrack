@@ -1,5 +1,25 @@
 const router = require('express').Router();
-const { Provider, Course, EmploymentPeriod, Verification, Trainee } = require('../models');
+const { Provider, Course, EmploymentPeriod, Verification, Trainee, User } = require('../models');
+const { publicCounsellor } = require('../lib/counsellors');
+
+// GET /api/counsellors — counsellors + the courses they cover
+router.get('/counsellors', async (req, res, next) => {
+  try {
+    const [rows, courses] = await Promise.all([
+      User.find({ role: 'counsellor' }).lean(),
+      Course.find().lean(),
+    ]);
+    const cmap = new Map(courses.map((c) => [String(c._id), c.name]));
+    res.json({
+      counsellors: rows.map((u) => ({
+        ...publicCounsellor(u),
+        courses: (u.assignedCourseIds || []).map((id) => cmap.get(String(id))).filter(Boolean),
+      })),
+    });
+  } catch (err) {
+    next(err);
+  }
+});
 
 // GET /api/providers — id/name/district list (for the provider scope switcher).
 // Ordered by aggregate outcome risk (highest first) so the scope switcher opens

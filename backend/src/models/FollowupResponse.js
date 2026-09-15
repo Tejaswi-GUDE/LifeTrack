@@ -17,6 +17,8 @@ const FollowupResponseSchema = new Schema(
       role: { type: String, default: null },
       startDate: { type: Date, default: null },
       monthlyIncome: { type: Number, default: null },
+      // which of the skills their job requires the trainee reports actually having
+      skillsHave: { type: [String], default: undefined },
       skillsRelevant: { type: String, enum: ['yes', 'partially', 'no', null], default: null },
       nonPlacementReason: { type: String, default: null },
     },

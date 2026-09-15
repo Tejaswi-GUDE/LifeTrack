@@ -16,6 +16,8 @@ const {
   ROOT_CAUSE_LABELS, INTERVENTION_LABELS, STATUS_LABELS, CONFIDENCE_LABELS,
   CONSENT_PURPOSE_LABELS, label,
 } = require('./labels');
+const { buildSkillIntel } = require('./skillIntel');
+const { counsellorForCourse, publicCounsellor } = require('./counsellors');
 
 const MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
 const fmt = (d) => {
@@ -170,9 +172,10 @@ async function buildTraineeProfile(id) {
     lastResponseDate: lastResp ? lastResp.submittedDate : null,
     schedules: schedules
       .slice()
-      .sort((a, b) => a.checkpointDay - b.checkpointDay)
+      .sort((a, b) => new Date(a.scheduledDate) - new Date(b.scheduledDate))
       .map((s) => ({
         checkpointDay: s.checkpointDay,
+        adhoc: !!s.adhoc,
         scheduledDate: s.scheduledDate,
         status: s.status,
         escalatedAt: s.escalatedAt || null,
@@ -417,9 +420,10 @@ async function buildTraineeProfile(id) {
 
   schedules
     .slice()
-    .sort((a, b) => a.checkpointDay - b.checkpointDay)
+    .sort((a, b) => new Date(a.scheduledDate) - new Date(b.scheduledDate))
     .forEach((s) => {
       const day = s.checkpointDay;
+      const dayLabel = day ? `DAY ${day}` : 'REQUESTED';
       const resp = responses.find((r) => String(r.scheduleId) === String(s._id));
       let at;
       let dateLabel;
@@ -438,18 +442,21 @@ async function buildTraineeProfile(id) {
         if (a.status) bits.push(`Reported ${String(a.status).replace(/_/g, ' ')}`);
         if (a.employerName) bits.push(a.employerName);
         if (a.monthlyIncome != null) bits.push(`${inr(a.monthlyIncome)}/mo`);
-        if (a.skillsRelevant) bits.push(`skills relevant: ${a.skillsRelevant}`);
+        if (Array.isArray(a.skillsHave) && a.skillsHave.length) bits.push(`holds ${a.skillsHave.length} required skill${a.skillsHave.length === 1 ? '' : 's'}`);
+        else if (a.skillsRelevant) bits.push(`skills relevant: ${a.skillsRelevant}`);
         if (a.nonPlacementReason) bits.push(`reason: ${a.nonPlacementReason}`);
         if (resp.channel && resp.channel !== 'assisted') bits.push(`channel: ${resp.channel}`);
         detail = bits.join(' · ');
         expand = {
-          title: `Day ${day} follow-up response`,
+          title: `${day ? `Day ${day}` : 'Requested'} follow-up response`,
           rows: [
             ['Status', a.status || '—'],
             ['Employer', a.employerName || '—'],
             ['Role', a.role || '—'],
             ['Monthly income', a.monthlyIncome != null ? inr(a.monthlyIncome) : '—'],
-            ['Skills relevant', a.skillsRelevant || '—'],
+            ...(Array.isArray(a.skillsHave) && a.skillsHave.length
+              ? [['Skills reported held', a.skillsHave.join(', ')]]
+              : [['Skills relevant', a.skillsRelevant || '—']]),
             ['Channel', resp.channel],
             ['Submitted', fmt(resp.submittedDate)],
           ],
@@ -467,8 +474,10 @@ async function buildTraineeProfile(id) {
       } else if (new Date(s.scheduledDate) <= now) {
         at = new Date(s.scheduledDate).toISOString();
         dateLabel = fmt(s.scheduledDate);
-        headline = 'Follow-up due';
-        detail = `Scheduled ${fmt(s.scheduledDate)} — awaiting response`;
+        headline = s.adhoc ? 'Follow-up requested' : 'Follow-up due';
+        detail = s.adhoc
+          ? `Requested by ${s.requestedByRole || 'provider'}${s.note ? ` — “${s.note}”` : ''} — awaiting response`
+          : `Scheduled ${fmt(s.scheduledDate)} — awaiting response`;
       } else {
         at = new Date(s.scheduledDate).toISOString();
         dateLabel = `${fmt(s.scheduledDate)} · upcoming`;
@@ -478,11 +487,11 @@ async function buildTraineeProfile(id) {
       }
 
       events.push({
-        id: `followup-${day}`,
+        id: `followup-${s._id}`,
         at,
         _order: 2,
         dateLabel,
-        stage: `FOLLOW-UP · DAY ${day}`,
+        stage: `FOLLOW-UP · ${dayLabel}`,
         categories: ['followups'],
         node: 'hollow',
         pending,
@@ -618,6 +627,8 @@ async function buildTraineeProfile(id) {
     jobChanges: outcomeEvents.filter((e) => e.type === 'job_lost').length,
     wageProgression,
     skillMatch: skillMatchOut,
+    skillIntel: buildSkillIntel({ trainee, course, activePeriod, jobRefs, skillMatchLatest: latestSm }),
+    counsellor: publicCounsellor(await counsellorForCourse(trainee.courseId)),
     followups,
     interventions: interventionsOut,
     rootCauses: rootCausesOut,

@@ -7,9 +7,9 @@ const {
   User, Provider, Course, JobSkillReference, Trainee, OutcomeEvent,
   EmploymentPeriod, IncomeCheckpoint, Verification, SkillMatchResult,
   FollowupSchedule, FollowupResponse, RootCause, Intervention,
-  ConsentRecord, AuditLog,
+  ConsentRecord, SupportRequest, AuditLog,
 } = require('../models');
-const { providers, courses, jobSkillReferences, trainees, users } = require('./data');
+const { providers, courses, jobSkillReferences, trainees, users, supportRequests, daysAgo } = require('./data');
 
 async function runSeed() {
   console.log('[seed] clearing existing collections...');
@@ -19,7 +19,7 @@ async function runSeed() {
     EmploymentPeriod.deleteMany({}), IncomeCheckpoint.deleteMany({}), Verification.deleteMany({}),
     SkillMatchResult.deleteMany({}), FollowupSchedule.deleteMany({}), FollowupResponse.deleteMany({}),
     RootCause.deleteMany({}), Intervention.deleteMany({}), ConsentRecord.deleteMany({}),
-    AuditLog.deleteMany({}),
+    SupportRequest.deleteMany({}), AuditLog.deleteMany({}),
   ]);
 
   // 1. Providers
@@ -63,6 +63,8 @@ async function runSeed() {
       courseId: courseBySlug[t.courseSlug]._id,
       providerId: providerBySlug[t.providerSlug]._id,
       batchId: t.batchId,
+      // skills the trainee holds — defaults to what their course taught
+      skills: t.skills || courseBySlug[t.courseSlug].skillTags || [],
       training: t.training,
       currentStatus: t.currentStatus,
       currentConfidence: t.currentConfidence,
@@ -172,14 +174,60 @@ async function runSeed() {
   console.log(`[seed] trainees: ${trainees.length}`);
   console.log('[seed] child records:', counts);
 
-  // 5. Users (resolve scopeSlug -> providerId/traineeId)
+  // 5. Users (resolve scopeSlug -> providerId/traineeId, course slugs -> ids)
+  const userBySlug = {};
   for (const u of users) {
     let scopeRef = null;
     if (u.role === 'provider') scopeRef = providerBySlug[u.scopeSlug]._id;
     if (u.role === 'trainee') scopeRef = traineeBySlug[u.scopeSlug]._id;
-    await User.create({ name: u.name, role: u.role, scopeRef });
+    const doc = await User.create({
+      name: u.name,
+      role: u.role,
+      scopeRef,
+      email: u.email || undefined,
+      phone: u.phone || undefined,
+      availability: u.availability || undefined,
+      assignedCourseIds: (u.assignedCourseSlugs || []).map((s) => courseBySlug[s]._id),
+    });
+    userBySlug[u.slug] = doc;
   }
   console.log(`[seed] users: ${users.length}`);
+
+  // 6. Support requests (trainee -> provider / counsellor threads)
+  const counsellorList = users.filter((u) => u.role === 'counsellor');
+  const counsellorForCourseSlug = (courseSlug) => {
+    const match = counsellorList.find((c) => (c.assignedCourseSlugs || []).includes(courseSlug));
+    return userBySlug[(match || counsellorList[0]).slug];
+  };
+  let reqCount = 0;
+  for (const sr of supportRequests || []) {
+    const t = traineeBySlug[sr.traineeSlug];
+    const tData = trainees.find((x) => x.slug === sr.traineeSlug);
+    const courseDoc = courseBySlug[tData.courseSlug];
+    const providerDoc = providerBySlug[tData.providerSlug];
+    const counsellorDoc = sr.toRole === 'counsellor' ? counsellorForCourseSlug(tData.courseSlug) : null;
+    await SupportRequest.create({
+      traineeId: t._id,
+      courseId: courseDoc._id,
+      providerId: providerDoc._id,
+      toRole: sr.toRole,
+      assignedCounsellorId: counsellorDoc ? counsellorDoc._id : null,
+      category: sr.category,
+      subject: sr.subject,
+      status: sr.status || 'open',
+      messages: (sr.messages || []).map((m) => ({
+        fromRole: m.fromRole,
+        fromName:
+          m.fromRole === 'trainee' ? tData.name
+            : m.fromRole === 'counsellor' ? (counsellorDoc ? counsellorDoc.name : 'Counsellor')
+              : `${providerDoc.name} — Admin`,
+        text: m.text,
+        at: daysAgo(m.daysAgo || 0),
+      })),
+    });
+    reqCount += 1;
+  }
+  console.log(`[seed] support requests: ${reqCount}`);
 
   await AuditLog.create({
     entity: 'System', entityId: new mongoose.Types.ObjectId(),

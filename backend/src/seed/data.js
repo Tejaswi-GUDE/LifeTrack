@@ -78,6 +78,8 @@ const trainees = [
     courseSlug: 'course_retail',
     providerSlug: 'prov_a',
     batchId: 'RET-2026-A',
+    // covers her role plus a cross-cutting hot skill — the "growing" success story
+    skills: ['Customer Communication', 'Point of Sale Billing', 'Inventory Basics', 'Retail Etiquette', 'Spoken English'],
     training: { attendancePct: 92, assessmentScore: 81, certified: true, certificationDate: daysAgo(95) },
     currentStatus: 'employed',
     currentConfidence: 'high',
@@ -760,13 +762,67 @@ const trainees = [
 
 // Seeded users (mock login list) - one per role, plus provider-scoped and
 // trainee-scoped users resolved to real ObjectIds at seed time.
+// Counsellors are assigned specific courses; a trainee's counselling requests
+// route to the counsellor for their course.
 const users = [
   { slug: 'user_gov', name: 'Dept. of Skill Development (State)', role: 'government' },
   { slug: 'user_provider_a', name: 'Ranchi Skill Mission Center - Admin', role: 'provider', scopeSlug: 'prov_a' },
   { slug: 'user_provider_b', name: 'Patna Livelihood Institute - Admin', role: 'provider', scopeSlug: 'prov_b' },
-  { slug: 'user_counsellor_1', name: 'Sunita Rao (Counsellor)', role: 'counsellor' },
+  {
+    slug: 'user_counsellor_1', name: 'Sunita Rao', role: 'counsellor',
+    email: 'sunita.rao@skillmission.gov.in', phone: '+91 98350 11021', availability: 'Mon–Fri, 10am–5pm',
+    assignedCourseSlugs: ['course_office', 'course_retail'],
+  },
+  {
+    slug: 'user_counsellor_2', name: 'Vikram Prasad', role: 'counsellor',
+    email: 'vikram.prasad@skillmission.gov.in', phone: '+91 99310 44567', availability: 'Mon–Sat, 9am–4pm',
+    assignedCourseSlugs: ['course_electrician'],
+  },
+  {
+    slug: 'user_counsellor_3', name: 'Meena Kumari', role: 'counsellor',
+    email: 'meena.kumari@skillmission.gov.in', phone: '+91 97090 88123', availability: 'Tue–Sat, 11am–6pm',
+    assignedCourseSlugs: ['course_tailoring'],
+  },
   { slug: 'user_trainee_priya', name: 'Priya Kumari', role: 'trainee', scopeSlug: 'priya' },
   { slug: 'user_trainee_ravi', name: 'Ravi Oraon', role: 'trainee', scopeSlug: 'ravi' },
 ];
 
-module.exports = { TODAY, daysAgo, daysFromNow, providers, courses, jobSkillReferences, trainees, users };
+// Trainee → provider / counsellor requests (with a small message thread).
+const supportRequests = [
+  {
+    traineeSlug: 'ravi', toRole: 'counsellor', category: 'counselling',
+    subject: 'Not getting any interview calls after certification',
+    status: 'open',
+    messages: [
+      { fromRole: 'trainee', text: 'It has been almost 2 months since I certified and I have not had a single interview. I don\'t know what I am doing wrong. Can you help?', daysAgo: 6 },
+    ],
+  },
+  {
+    traineeSlug: 'sana', toRole: 'counsellor', category: 'skill_support',
+    subject: 'Want to join an Advanced Excel bridge course',
+    status: 'in_progress',
+    messages: [
+      { fromRole: 'trainee', text: 'My job needs MS Excel but our course did not cover it well. Is there a short course I can do in the evenings?', daysAgo: 9 },
+      { fromRole: 'counsellor', text: 'Yes — there is a 2-week evening Advanced Excel batch starting next Monday at the Ranchi centre. I have added your name to the list; please confirm you can attend 6–8pm.', daysAgo: 7 },
+    ],
+  },
+  {
+    traineeSlug: 'deepak', toRole: 'counsellor', category: 'placement_help',
+    subject: 'Need help finding electrician work near Patna',
+    status: 'open',
+    messages: [
+      { fromRole: 'trainee', text: 'I finished the wiring course but the contractor work near my village stopped. Please connect me with any site work.', daysAgo: 3 },
+    ],
+  },
+  {
+    traineeSlug: 'fatima', toRole: 'provider', category: 'record_update',
+    subject: 'Please update my monthly income — it has increased',
+    status: 'resolved',
+    messages: [
+      { fromRole: 'trainee', text: 'My boutique income is now about ₹10,500 a month, up from ₹8,500. Please update my record.', daysAgo: 8 },
+      { fromRole: 'provider', text: 'Updated — thank you for keeping us posted. Your day-180 check-in already reflected this. Well done on the growth!', daysAgo: 7 },
+    ],
+  },
+];
+
+module.exports = { TODAY, daysAgo, daysFromNow, providers, courses, jobSkillReferences, trainees, users, supportRequests };

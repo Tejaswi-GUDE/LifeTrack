@@ -26,6 +26,7 @@ import FollowupForm from './pages/trainee/FollowupForm';
 
 import RiskCenter from './pages/counsellor/RiskCenter';
 import FollowupsQueue from './pages/shared/FollowupsQueue';
+import RequestsInbox from './pages/shared/RequestsInbox';
 
 import EmployerDashboard from './pages/employer/Dashboard';
 import EmployerVerify from './pages/employer/Verify';
@@ -72,10 +73,12 @@ export default function App() {
         <Route path="/provider/skill-gaps" element={<CourseSkillGap />} />
         <Route path="/provider/course/:id/skill-gap" element={<CourseSkillGap />} />
         <Route path="/provider/analytics" element={<OutcomeAnalytics />} />
+        <Route path="/provider/requests" element={<RequestsInbox />} />
         <Route path="/provider/settings" element={<Settings />} />
 
         {/* Counsellor */}
         <Route path="/counsellor/worklist" element={<RiskCenter />} />
+        <Route path="/counsellor/requests" element={<RequestsInbox />} />
         <Route path="/counsellor/trainees" element={<TraineeDirectory />} />
         <Route path="/counsellor/trainee/:id" element={<TraineeProfile />} />
         <Route path="/counsellor/followups" element={<FollowupsQueue />} />
@@ -86,6 +89,7 @@ export default function App() {
         <Route path="/trainee/timeline" element={<CareerTimeline />} />
         <Route path="/trainee/followups" element={<FollowupsQueue />} />
         <Route path="/trainee/followup/:scheduleId" element={<FollowupForm />} />
+        <Route path="/trainee/requests" element={<RequestsInbox />} />
         <Route path="/trainee/consent" element={<Consent />} />
 
         {/* Employer */}

@@ -1,15 +1,19 @@
-import { Link } from 'react-router-dom';
+import { useState } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
 import './my-career.css';
 import { useApi } from '../../hooks/useApi';
 import { useScopedEntity } from '../../hooks/useScopedEntity';
 import { useTopbarActions } from '../../components/shell/TopbarSlot';
 import Card from '../../components/ui/Card';
+import Button from '../../components/ui/Button';
 import Badge from '../../components/ui/Badge';
 import StatusBadge from '../../components/ui/StatusBadge';
 import EmptyState from '../../components/ui/EmptyState';
 import ErrorState from '../../components/ui/ErrorState';
 import { Skeleton } from '../../components/ui/Loading';
 import Timeline from '../../components/Timeline';
+import SkillIntel from '../../components/SkillIntel';
+import RaiseRequestModal from '../../components/RaiseRequestModal';
 import { inr, pct, fmtDate } from '../../lib/format';
 
 const smColor = (b) => (b === 'good' ? 'var(--teal)' : b === 'partial' ? 'var(--ochre)' : 'var(--brick)');
@@ -17,7 +21,9 @@ const smLabel = (b) => (b === 'good' ? 'Good match' : b === 'partial' ? 'Partial
 
 export default function TraineeHome() {
   const trainee = useScopedEntity('trainee');
+  const navigate = useNavigate();
   const { data, error, loading, reload } = useApi(trainee.id ? `/trainees/${trainee.id}` : null);
+  const [raiseOpen, setRaiseOpen] = useState(false);
 
   useTopbarActions(trainee.Switcher, [trainee.id]);
 
@@ -163,6 +169,39 @@ export default function TraineeHome() {
           )}
         </Card>
       </div>
+
+      {/* skills you have + what to learn next to grow */}
+      {data.skillIntel && (
+        <Card>
+          <SkillIntel intel={data.skillIntel} heading="Your skills & how to grow" />
+        </Card>
+      )}
+
+      {/* your counsellor + raise a request */}
+      <Card title="Need help? Contact your counsellor" subtitle={data.counsellor ? `Assigned to your course (${t.course ? t.course.name : 'your course'})` : undefined}>
+        {data.counsellor ? (
+          <>
+            <div className="mc-fact"><span>Counsellor</span><strong>{data.counsellor.name}</strong></div>
+            {data.counsellor.email && <div className="mc-fact"><span>Email</span><strong>{data.counsellor.email}</strong></div>}
+            {data.counsellor.phone && <div className="mc-fact"><span>Phone</span><strong>{data.counsellor.phone}</strong></div>}
+            {data.counsellor.availability && <div className="mc-fact"><span>Available</span><strong>{data.counsellor.availability}</strong></div>}
+          </>
+        ) : (
+          <p className="dash-note" style={{ marginTop: 0 }}>A counsellor for your course will be assigned shortly.</p>
+        )}
+        <div style={{ display: 'flex', gap: 10, marginTop: 12, flexWrap: 'wrap' }}>
+          <Button variant="primary" onClick={() => setRaiseOpen(true)}>Raise a request</Button>
+          <Link to="/trainee/requests" className="btn btn-secondary" style={{ textDecoration: 'none' }}>My requests</Link>
+        </div>
+      </Card>
+
+      <RaiseRequestModal
+        open={raiseOpen}
+        onClose={() => setRaiseOpen(false)}
+        traineeId={trainee.id}
+        counsellorName={data.counsellor?.name}
+        onCreated={(r) => { reload(); navigate(`/trainee/requests${r?.id ? `?r=${r.id}` : ''}`); }}
+      />
 
       {/* recommended next actions */}
       <Card title="Recommended next steps">
