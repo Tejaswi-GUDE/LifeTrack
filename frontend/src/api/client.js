@@ -2,7 +2,10 @@
  * Minimal API client. Prefixes VITE_API_BASE_URL (default `/api`, served
  * through the Vite dev proxy → the existing Express backend on :4000).
  */
-const BASE = (import.meta.env.VITE_API_BASE_URL || '/api').replace(/\/$/, '');
+const rawBase = (import.meta.env.VITE_API_BASE_URL || '/api').replace(/\/$/, '');
+const BASE = (rawBase.startsWith('http') && !rawBase.endsWith('/api'))
+  ? `${rawBase}/api`
+  : rawBase;
 
 export async function apiGet(path, params) {
   const url = new URL(`${BASE}${path}`, window.location.origin);
