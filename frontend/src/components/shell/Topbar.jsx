@@ -3,6 +3,7 @@ import { useSession } from '../../context/SessionContext';
 import { ROLE_LABEL, settingsRouteForRole } from '../../config/nav';
 import Badge from '../ui/Badge';
 import Dropdown from '../ui/Dropdown';
+import ThemeToggle from '../brand/ThemeToggle';
 import NotificationsMenu from './NotificationsMenu';
 import { TopbarActions } from './TopbarSlot';
 
@@ -49,6 +50,7 @@ export default function Topbar({ crumb, title, role, userName, onOpenNav }) {
 
       <div className="controls">
         <TopbarActions />
+        <ThemeToggle />
         <Badge tone="slate" fill="outline" className="shell-role">
           {ROLE_LABEL[role] || 'LifeTrack'}
         </Badge>
@@ -58,6 +60,9 @@ export default function Topbar({ crumb, title, role, userName, onOpenNav }) {
           align="end"
           items={[
             { label: userName || ROLE_LABEL[role], disabled: true },
+            { separator: true },
+            { label: '→ Demo phone', onSelect: () => navigate('/dev/phone') },
+            { label: 'Switch demo role', onSelect: () => navigate('/login') },
             { separator: true },
             { label: 'Settings / Consent', onSelect: () => navigate(settingsRouteForRole(role)) },
             { label: 'Sign out', danger: true, onSelect: () => { signOut(); navigate('/login'); } },

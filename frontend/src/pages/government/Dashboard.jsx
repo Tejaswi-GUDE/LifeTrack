@@ -242,6 +242,11 @@ export default function GovernmentDashboard() {
           <ConfDots />
           {placementConfText}
         </Kpi>
+        <Kpi label="Outcomes Known" value={emptyScope ? '—' : pct1(kpis.outcomesKnown.value)}>
+          {emptyScope
+            ? 'No trainees in this scope yet'
+            : `${kpis.outcomesKnown.numerator} of ${kpis.outcomesKnown.denominator} certified · ${kpis.outcomesKnown.unknownPct}% unknown`}
+        </Kpi>
         <Kpi label="Retention Rate (any active job)" value={emptyScope ? '—' : pct1(kpis.retentionRate.value)}>
           {emptyScope
             ? 'No trainees in this scope yet'

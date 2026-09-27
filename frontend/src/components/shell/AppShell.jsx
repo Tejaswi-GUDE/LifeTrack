@@ -7,6 +7,7 @@ import Topbar from './Topbar';
 import { TopbarSlotProvider } from './TopbarSlot';
 import ErrorBoundary from '../ErrorBoundary';
 import Assistant from '../Assistant';
+import GuidedDemo from '../GuidedDemo';
 
 /**
  * AppShell — the one product frame (Design System §8/§19): an --ink sidebar
@@ -62,6 +63,7 @@ export default function AppShell() {
           <Assistant />
         </ErrorBoundary>
       </div>
+      <GuidedDemo />
     </TopbarSlotProvider>
   );
 }

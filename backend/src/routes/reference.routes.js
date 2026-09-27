@@ -2,6 +2,32 @@ const router = require('express').Router();
 const { Provider, Course, EmploymentPeriod, Verification, Trainee, User } = require('../models');
 const { publicCounsellor } = require('../lib/counsellors');
 
+// GET /api/public/stats — login page stats (no auth required)
+router.get('/public/stats', async (req, res, next) => {
+  try {
+    const trainees = await Trainee.find({ 'training.certified': true }).lean();
+    const total = trainees.length;
+
+    // Outcomes known: has an outcome event (employed, self_employed, apprentice, unemployed, job_lost)
+    const withOutcome = trainees.filter(t =>
+      ['employed', 'self_employed', 'apprentice', 'unemployed', 'job_lost'].includes(t.currentStatus)
+    ).length;
+
+    // Employer-verified: has a verified employment period (confirmed by employer)
+    const verifications = await Verification.find({ status: 'confirmed' }).lean();
+    const verifiedTraineeIds = new Set(verifications.map(v => String(v.traineeId)));
+    const employerVerified = [...verifiedTraineeIds].length;
+
+    res.json({
+      traineesTracked: total,
+      outcomesKnownPct: total > 0 ? Math.round((withOutcome / total) * 100) : 0,
+      employerVerifiedPct: total > 0 ? Math.round((employerVerified / total) * 100) : 0,
+    });
+  } catch (err) {
+    next(err);
+  }
+});
+
 // GET /api/counsellors — counsellors + the courses they cover
 router.get('/counsellors', async (req, res, next) => {
   try {

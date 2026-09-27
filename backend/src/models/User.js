@@ -12,7 +12,7 @@ const UserSchema = new Schema(
     role: {
       type: String,
       required: true,
-      enum: ['government', 'provider', 'trainee', 'counsellor'],
+      enum: ['government', 'provider', 'trainee', 'counsellor', 'field_agent', 'employer'],
     },
     scopeRef: { type: Schema.Types.ObjectId, default: null }, // providerId or traineeId depending on role
     email: { type: String, trim: true, lowercase: true },

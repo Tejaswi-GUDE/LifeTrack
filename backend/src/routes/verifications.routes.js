@@ -1,6 +1,6 @@
 const router = require('express').Router();
 const mongoose = require('mongoose');
-const { Trainee, EmploymentPeriod, Verification, AuditLog } = require('../models');
+const { Trainee, EmploymentPeriod, Verification, AuditLog, Evidence, OutcomeEvent } = require('../models');
 
 // GET /api/verifications?employer=&status=   — list (employer dashboard)
 router.get('/', async (req, res, next) => {
@@ -91,6 +91,73 @@ router.post('/:id/respond', async (req, res, next) => {
       entity: 'Verification', entityId: v._id, action: `verification_${status}`, actorRole,
     });
     res.json({ verification: { id: String(v._id), status: v.status, respondedAt: v.respondedAt } });
+  } catch (err) {
+    next(err);
+  }
+});
+
+// POST /api/verifications/evidence/upload  { traineeId, type, fileUrl, fileName }
+router.post('/evidence/upload', async (req, res, next) => {
+  try {
+    const { traineeId, type, fileUrl, fileName } = req.body;
+    const evidence = new Evidence({ traineeId, type, fileUrl, fileName });
+    await evidence.save();
+    res.json({ success: true, evidence });
+  } catch (err) {
+    next(err);
+  }
+});
+
+// POST /api/verifications/evidence/:id/review  { status: approved|rejected, notes }
+router.post('/evidence/:id/review', async (req, res, next) => {
+  try {
+    const { status, notes } = req.body;
+    const evidence = await Evidence.findById(req.params.id);
+    if (!evidence) {
+      const e = new Error('Evidence not found');
+      e.status = 404;
+      throw e;
+    }
+
+    evidence.status = status;
+    evidence.notes = notes;
+    evidence.reviewedBy = req.session?.name || 'system';
+    evidence.reviewedAt = new Date();
+    await evidence.save();
+
+    if (status === 'approved') {
+      const trainee = await Trainee.findById(evidence.traineeId);
+      trainee.verificationLevel = 3;
+      trainee.verificationSource = 'provider_evidence';
+      trainee.verificationHistory.push({
+        level: 3,
+        source: 'provider_evidence',
+        actor: req.session?.name || 'system',
+        date: new Date(),
+      });
+      await trainee.save();
+
+      await OutcomeEvent.create({
+        traineeId: evidence.traineeId,
+        type: trainee.status,
+        verificationLevel: 3,
+        reportedVia: 'provider_evidence',
+      });
+    }
+
+    res.json({ success: true, evidence });
+  } catch (err) {
+    next(err);
+  }
+});
+
+// GET /api/verifications/evidence/pending
+router.get('/evidence/pending', async (req, res, next) => {
+  try {
+    const pending = await Evidence.find({ status: 'pending' })
+      .populate('traineeId', 'name district phone')
+      .sort({ uploadedAt: -1 });
+    res.json(pending);
   } catch (err) {
     next(err);
   }

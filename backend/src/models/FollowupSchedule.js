@@ -19,6 +19,20 @@ const FollowupScheduleSchema = new Schema(
     note: { type: String, default: null },
     reminderSentAt: { type: Date, default: null },
     escalatedAt: { type: Date, default: null },
+
+    // Escalation ladder: tracks current step and attempts across channels
+    currentStep: { type: Number, default: 0 }, // 0=whatsapp, 1=sms, 2=ivr, 3=alternate, 4=agent, 5=not_responding
+    stepNames: { type: [String], default: ['WhatsApp', 'SMS', 'IVR', 'Alternate', 'Agent', 'Not responding'] },
+    attempts: [
+      {
+        step: Number,
+        channel: String,
+        attempted: Boolean,
+        successful: Boolean,
+        respondedAt: Date,
+        response: String,
+      },
+    ],
   },
   { timestamps: true }
 );

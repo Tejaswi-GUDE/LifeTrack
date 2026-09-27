@@ -31,6 +31,8 @@ import RequestsInbox from './pages/shared/RequestsInbox';
 import EmployerDashboard from './pages/employer/Dashboard';
 import EmployerVerify from './pages/employer/Verify';
 
+import MockPhone from './pages/dev/MockPhone';
+
 function RootRedirect() {
   const { session } = useSession();
   return <Navigate to={session ? roleHome(session.role) : '/login'} replace />;
@@ -49,6 +51,7 @@ export default function App() {
       <Route path="/" element={<RootRedirect />} />
       <Route path="/login" element={<Login />} />
       <Route path="/employer/verify/:verificationId" element={<EmployerVerify />} />
+      <Route path="/dev/phone" element={<MockPhone />} />
       <Route path="/ui" element={<UIShowcase />} />
 
       <Route element={<AppShell />}>

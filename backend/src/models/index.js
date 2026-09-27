@@ -11,9 +11,11 @@ module.exports = {
   SkillMatchResult: require('./SkillMatchResult'),
   FollowupSchedule: require('./FollowupSchedule'),
   FollowupResponse: require('./FollowupResponse'),
+  MockMessage: require('./MockMessage'),
   RootCause: require('./RootCause'),
   Intervention: require('./Intervention'),
   ConsentRecord: require('./ConsentRecord'),
   SupportRequest: require('./SupportRequest'),
   AuditLog: require('./AuditLog'),
+  Evidence: require('./Evidence'),
 };

@@ -20,7 +20,23 @@ body{background:var(--paper);color:var(--ink);font-family:var(--sans);font-size:
 h1,h2,h3,p{margin:0;}
 a{color:inherit;}
 
-/* ---- app shell: sidebar + topbar, identical across every dashboard ---- */
+/* ---- dark mode (data-theme="dark" on document root) ---- */
+:root[data-theme="dark"]{
+  --ink:#E6EDF3; --ink-70:rgba(230,237,243,.7); --ink-30:rgba(230,237,243,.30); --ink-20:rgba(230,237,243,.18); --ink-10:rgba(230,237,243,.08);
+  --paper:#0D1117; --paper-raised:#161B22;
+  --slate:#8B949E; --slate-30:rgba(139,148,158,.30); --slate-15:rgba(139,148,158,.15); --slate-10:rgba(139,148,158,.10); --slate-tint:#21262D;
+  --teal:#3FB950; --teal-tint:#0D422E;
+  --ochre:#D29922; --ochre-tint:#2D2415;
+  --brick:#F85149; --brick-tint:#3D1F1A;
+  --plum:#BC8CDB; --plum-tint:#2B1D42;
+  --shadow-sm:0 1px 2px rgba(0,0,0,.3);
+  --shadow-md:0 8px 24px rgba(0,0,0,.4);
+  --shadow-lg:0 16px 48px rgba(0,0,0,.5);
+  --shadow-focus:0 0 0 3px rgba(230,237,243,.2);
+}
+
+/* sidebar always uses dark ink bg in both light and dark themes */
+:root[data-theme="dark"] .sidebar{background:#1C2B45;color:#fff;}
 .app{display:flex;min-height:100vh;}
 .sidebar{width:224px;flex:0 0 224px;background:var(--ink);color:#fff;padding:24px 16px;display:flex;flex-direction:column;}
 .sidebar .wordmark{font-family:var(--serif);font-weight:600;font-size:19px;margin-bottom:2px;padding-left:8px;}
@@ -136,3 +152,14 @@ table.tbl td.num{text-align:right;font-variant-numeric:tabular-nums;font-weight:
 @keyframes shimmer{0%{background-position:100% 0;}100%{background-position:0 0;}}
 
 .tabular{font-variant-numeric:tabular-nums;}
+
+/* ---- theme toggle ---- */
+.theme-toggle{width:36px;height:36px;border-radius:var(--radius-sm);border:1px solid var(--slate-30);background:var(--paper-raised);color:var(--ink);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:0;transition:all 0.2s ease;}
+.theme-toggle:hover{background:var(--slate-tint);}
+.theme-toggle:focus-visible{outline:none;box-shadow:var(--shadow-focus);}
+
+/* ---- logo ---- */
+.logo{display:flex;align-items:center;gap:8px;font-family:var(--serif);font-weight:600;font-size:16px;color:var(--ink);text-decoration:none;}
+.logo-icon{color:var(--ink);}
+.logo-onDark{color:#fff;}
+.logo-onDark .logo-icon{color:#fff;}

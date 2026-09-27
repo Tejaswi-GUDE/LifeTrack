@@ -2,10 +2,13 @@ import { useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import './login.css';
 import { useSession } from '../context/SessionContext';
+import { useTheme } from '../context/ThemeContext';
 import { useApi } from '../hooks/useApi';
 import Button from '../components/ui/Button';
 import Select from '../components/ui/Select';
 import { Skeleton } from '../components/ui/Loading';
+import Logo from '../components/brand/Logo';
+import ThemeToggle from '../components/brand/ThemeToggle';
 
 /**
  * Login — demo access (no password). Pick a role, then, for the role-scoped
@@ -92,7 +95,9 @@ export default function Login() {
 
   const cfg = picked && picked.scope ? SCOPE_CFG[picked.scope] : null;
   const { data, loading, error } = useApi(cfg ? cfg.path : null);
+  const { data: statsData } = useApi('/public/stats');
   const options = useMemo(() => (cfg && data ? data[cfg.key] || [] : []), [cfg, data]);
+  const stats = statsData || {};
 
   // default to the first option once the list loads
   useEffect(() => {
@@ -130,23 +135,35 @@ export default function Login() {
     <div className="login-shell">
       <aside className="login-brand">
         <div>
-          <div className="login-brand-word">LifeTrack</div>
-          <div className="login-brand-tag">
-            Longitudinal skilling-outcomes &amp; livelihood intelligence — one continuous, verified record per trainee.
+          <Logo variant="onDark" />
+          <div style={{ marginTop: 20 }}>
+            <div className="login-brand-headline">Every trainee's journey, tracked beyond day one.</div>
+            <div className="login-brand-tag">
+              LifeTrack follows skilling outcomes from certification to lasting livelihoods — verified, private, and actionable.
+            </div>
           </div>
-          <ol className="login-loop">
-            {LOOP.map((step, i) => (
-              <li key={step}>
-                <span className="n">{i + 1}</span>
-                <span>{step}</span>
-              </li>
-            ))}
-          </ol>
+          <div className="login-stats">
+            <div className="login-stat-card">
+              <div className="stat-value">{stats.traineesTracked || 0}</div>
+              <div className="stat-label">Trainees tracked</div>
+            </div>
+            <div className="login-stat-card">
+              <div className="stat-value">{stats.outcomesKnownPct || 0}%</div>
+              <div className="stat-label">Outcomes known</div>
+            </div>
+            <div className="login-stat-card">
+              <div className="stat-value">{stats.employerVerifiedPct || 0}%</div>
+              <div className="stat-label">Employer-verified</div>
+            </div>
+          </div>
         </div>
         <div className="login-foot">SIH prototype · demo data · no personal data</div>
       </aside>
 
       <main className="login-main">
+        <div className="login-top-controls">
+          <ThemeToggle />
+        </div>
         {!picked ? (
           <>
             <h1 className="login-h1">Choose a role to sign in</h1>

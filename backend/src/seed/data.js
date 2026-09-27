@@ -83,7 +83,9 @@ const trainees = [
     training: { attendancePct: 92, assessmentScore: 81, certified: true, certificationDate: daysAgo(95) },
     currentStatus: 'employed',
     currentConfidence: 'high',
-    outcomeEvents: [{ type: 'employed', source: 'self', occurredAt: daysAgo(65) }],
+    verificationLevel: { level: 4, source: 'employer', actor: 'BrightRetail Pvt Ltd', verifiedAt: daysAgo(60), history: [{ level: 1, source: 'self', actor: 'Priya Kumari', verifiedAt: daysAgo(65) }, { level: 4, source: 'employer', actor: 'BrightRetail Pvt Ltd', verifiedAt: daysAgo(60) }] },
+    isConflicted: false,
+    outcomeEvents: [{ type: 'employed', source: 'self', occurredAt: daysAgo(65), verificationLevel: { level: 1, source: 'self', actor: 'Priya Kumari' } }],
     employmentPeriods: [
       {
         slug: 'priya_job1',
@@ -177,7 +179,9 @@ const trainees = [
     training: { attendancePct: 64, assessmentScore: 42, certified: true, certificationDate: daysAgo(52) },
     currentStatus: 'unemployed',
     currentConfidence: 'medium',
-    outcomeEvents: [{ type: 'unemployed', source: 'self', occurredAt: daysAgo(22) }],
+    verificationLevel: { level: 1, source: 'self', actor: 'Ravi Oraon', verifiedAt: daysAgo(22), history: [{ level: 1, source: 'self', actor: 'Ravi Oraon', verifiedAt: daysAgo(22) }] },
+    isConflicted: false,
+    outcomeEvents: [{ type: 'unemployed', source: 'self', occurredAt: daysAgo(22), verificationLevel: { level: 1, source: 'self', actor: 'Ravi Oraon' } }],
     employmentPeriods: [],
     incomeCheckpoints: [],
     verifications: [],
@@ -239,7 +243,9 @@ const trainees = [
     training: { attendancePct: 88, assessmentScore: 74, certified: true, certificationDate: daysAgo(70) },
     currentStatus: 'employed',
     currentConfidence: 'medium',
-    outcomeEvents: [{ type: 'employed', source: 'self', occurredAt: daysAgo(40) }],
+    verificationLevel: { level: 1, source: 'self', actor: 'Sana Khatoon', verifiedAt: daysAgo(40), history: [{ level: 1, source: 'self', actor: 'Sana Khatoon', verifiedAt: daysAgo(40) }] },
+    isConflicted: false,
+    outcomeEvents: [{ type: 'employed', source: 'self', occurredAt: daysAgo(40), verificationLevel: { level: 1, source: 'self', actor: 'Sana Khatoon' } }],
     employmentPeriods: [
       {
         slug: 'sana_job1',
@@ -330,10 +336,12 @@ const trainees = [
     training: { attendancePct: 90, assessmentScore: 78, certified: true, certificationDate: daysAgo(200) },
     currentStatus: 'employed',
     currentConfidence: 'medium',
+    verificationLevel: { level: 1, source: 'self', actor: 'Amit Verma', verifiedAt: daysAgo(35), history: [{ level: 1, source: 'self', actor: 'Amit Verma', verifiedAt: daysAgo(170) }, { level: 1, source: 'self', actor: 'Amit Verma', verifiedAt: daysAgo(35) }] },
+    isConflicted: false,
     outcomeEvents: [
-      { type: 'employed', source: 'self', occurredAt: daysAgo(170) },
-      { type: 'job_lost', source: 'self', occurredAt: daysAgo(60) },
-      { type: 'employed', source: 'self', occurredAt: daysAgo(35) },
+      { type: 'employed', source: 'self', occurredAt: daysAgo(170), verificationLevel: { level: 1, source: 'self', actor: 'Amit Verma' } },
+      { type: 'job_lost', source: 'self', occurredAt: daysAgo(60), verificationLevel: { level: 1, source: 'self', actor: 'Amit Verma' } },
+      { type: 'employed', source: 'self', occurredAt: daysAgo(35), verificationLevel: { level: 1, source: 'self', actor: 'Amit Verma' } },
     ],
     employmentPeriods: [
       {
@@ -460,7 +468,9 @@ const trainees = [
     training: { attendancePct: 95, assessmentScore: 88, certified: true, certificationDate: daysAgo(190) },
     currentStatus: 'self_employed',
     currentConfidence: 'high',
-    outcomeEvents: [{ type: 'self_employed', source: 'self', occurredAt: daysAgo(160) }],
+    verificationLevel: { level: 2, source: 'field_agent', actor: 'Field visit by Ranchi team', verifiedAt: daysAgo(155), history: [{ level: 1, source: 'self', actor: 'Fatima Begum', verifiedAt: daysAgo(160) }, { level: 2, source: 'field_agent', actor: 'Field visit by Ranchi team', verifiedAt: daysAgo(155) }] },
+    isConflicted: false,
+    outcomeEvents: [{ type: 'self_employed', source: 'self', occurredAt: daysAgo(160), verificationLevel: { level: 1, source: 'self', actor: 'Fatima Begum' } }],
     employmentPeriods: [
       {
         slug: 'fatima_biz1',
@@ -542,9 +552,11 @@ const trainees = [
     training: { attendancePct: 85, assessmentScore: 70, certified: true, certificationDate: daysAgo(210) },
     currentStatus: 'employed',
     currentConfidence: 'high',
+    verificationLevel: { level: 5, source: 'naps', actor: 'NAPS Registry (simulated)', verifiedAt: daysAgo(15), history: [{ level: 1, source: 'provider', actor: 'Provider record', verifiedAt: daysAgo(200) }, { level: 4, source: 'employer', actor: 'Patna Electricals Co.', verifiedAt: daysAgo(20) }, { level: 5, source: 'naps', actor: 'NAPS Registry (simulated)', verifiedAt: daysAgo(15) }] },
+    isConflicted: false,
     outcomeEvents: [
-      { type: 'apprentice', source: 'provider', occurredAt: daysAgo(200) },
-      { type: 'apprenticeship_converted', source: 'employer', occurredAt: daysAgo(20) },
+      { type: 'apprentice', source: 'provider', occurredAt: daysAgo(200), verificationLevel: { level: 1, source: 'provider', actor: 'Provider record' } },
+      { type: 'apprenticeship_converted', source: 'employer', occurredAt: daysAgo(20), verificationLevel: { level: 4, source: 'employer', actor: 'Patna Electricals Co.' } },
     ],
     employmentPeriods: [
       {
@@ -642,6 +654,8 @@ const trainees = [
     training: { attendancePct: 80, assessmentScore: 60, certified: true, certificationDate: daysAgo(250) },
     currentStatus: 'not_responding',
     currentConfidence: 'low',
+    verificationLevel: { level: 0, source: null, actor: null, verifiedAt: null, history: [] },
+    isConflicted: false,
     outcomeEvents: [],
     employmentPeriods: [],
     incomeCheckpoints: [],
@@ -690,7 +704,9 @@ const trainees = [
     training: { attendancePct: 78, assessmentScore: 66, certified: true, certificationDate: daysAgo(100) },
     currentStatus: 'employed',
     currentConfidence: 'low',
-    outcomeEvents: [{ type: 'employed', source: 'self', occurredAt: daysAgo(60) }],
+    verificationLevel: { level: 1, source: 'self', actor: 'Neha Devi', verifiedAt: daysAgo(60), history: [{ level: 1, source: 'self', actor: 'Neha Devi', verifiedAt: daysAgo(60) }] },
+    isConflicted: true,
+    outcomeEvents: [{ type: 'employed', source: 'self', occurredAt: daysAgo(60), verificationLevel: { level: 1, source: 'self', actor: 'Neha Devi' } }],
     employmentPeriods: [
       {
         slug: 'neha_job1',
@@ -757,6 +773,131 @@ const trainees = [
     consentSummary: { dataCollection: true, employerContact: true, analytics: false },
     outcomeRisk: { score: 30, band: 'low', factors: [{ label: 'Conflicting verification', points: 30 }], computedAt: daysAgo(49) },
     attritionRisk: { score: 0, band: 'low', factors: [], computedAt: daysAgo(49) },
+  },
+
+  // 9b. ESCALATION DEMO: Changed number → WhatsApp fails → SMS works, self-reported (for demo walkthrough)
+  {
+    slug: 'lakshmi',
+    name: 'Lakshmi Kumar',
+    contact: '9800099999', // "changed number" scenario
+    alternatePhone: '9800099998', // working alternate
+    alternateContactName: 'Rajesh (brother)',
+    alternateContactRelation: 'brother',
+    preferredChannel: 'whatsapp',
+    district: 'Patna',
+    demographicTags: { gender: 'female', ageBand: '18-24' },
+    courseSlug: 'course_office',
+    providerSlug: 'prov_b',
+    batchId: 'OFF-2026-B',
+    training: { attendancePct: 89, assessmentScore: 76, certified: true, certificationDate: daysAgo(85) },
+    currentStatus: 'employed',
+    currentConfidence: 'high',
+    verificationLevel: { level: 4, source: 'employer', actor: 'TechVendor Inc', verifiedAt: daysAgo(30), history: [{ level: 1, source: 'self', actor: 'Lakshmi Kumar', verifiedAt: daysAgo(55) }, { level: 4, source: 'employer', actor: 'TechVendor Inc', verifiedAt: daysAgo(30) }] },
+    isConflicted: false,
+    outcomeEvents: [
+      { type: 'employed', source: 'self', occurredAt: daysAgo(55), verificationLevel: { level: 1, source: 'self', actor: 'Lakshmi Kumar' } },
+    ],
+    employmentPeriods: [
+      {
+        slug: 'lakshmi_job1',
+        kind: 'employment',
+        employerName: 'TechVendor Inc',
+        occupation: 'Data Entry Operator',
+        startDate: daysAgo(55),
+        endDate: null,
+        isActive: true,
+      },
+    ],
+    incomeCheckpoints: [
+      { checkpointDay: 30, amountInr: 13000, recordedDate: daysAgo(55), employmentPeriodSlug: 'lakshmi_job1' },
+      { checkpointDay: 90, amountInr: 14000, recordedDate: daysAgo(5), employmentPeriodSlug: 'lakshmi_job1' },
+    ],
+    verifications: [
+      {
+        employmentPeriodSlug: 'lakshmi_job1',
+        method: 'employer',
+        employerName: 'TechVendor Inc',
+        claim: { role: 'Data Entry Operator', joinDate: daysAgo(55) },
+        status: 'confirmed',
+        respondedAt: daysAgo(30),
+      },
+    ],
+    skillMatchResults: [],
+    followupSchedules: [
+      { checkpointDay: 30, scheduledDate: daysAgo(55), status: 'completed' },
+      { checkpointDay: 90, scheduledDate: daysFromNow(20), status: 'pending', currentStep: 0, attempts: [] },
+      { checkpointDay: 180, scheduledDate: daysFromNow(110), status: 'pending' },
+      { checkpointDay: 365, scheduledDate: daysFromNow(295), status: 'pending' },
+    ],
+    followupResponses: [
+      {
+        checkpointDay: 30,
+        channel: 'web',
+        answers: { status: 'employed', employerName: 'TechVendor Inc', role: 'Data Entry Operator', monthlyIncome: 13000 },
+        submittedDate: daysAgo(55),
+      },
+    ],
+    rootCauses: [],
+    interventions: [],
+    consentRecords: [
+      { purpose: 'data_collection', granted: true, timestamp: daysAgo(86) },
+      { purpose: 'employer_contact', granted: true, timestamp: daysAgo(86) },
+      { purpose: 'analytics', granted: true, timestamp: daysAgo(86) },
+    ],
+    consentSummary: { dataCollection: true, employerContact: true, analytics: true },
+    outcomeRisk: { score: 5, band: 'low', factors: [], computedAt: daysAgo(1) },
+    attritionRisk: { score: 0, band: 'low', factors: [], computedAt: daysAgo(1) },
+  },
+
+  // 10. PURSUING FURTHER EDUCATION (positive outcome), self-reported, high confidence
+  {
+    slug: 'meena',
+    name: 'Meena Sharma',
+    contact: '9800000010',
+    district: 'Patna',
+    demographicTags: { gender: 'female', ageBand: '18-24' },
+    courseSlug: 'course_office',
+    providerSlug: 'prov_b',
+    batchId: 'OFF-2026-B',
+    training: { attendancePct: 91, assessmentScore: 78, certified: true, certificationDate: daysAgo(75) },
+    currentStatus: 'further_education',
+    currentConfidence: 'high',
+    verificationLevel: { level: 1, source: 'self', actor: 'Meena Sharma', verifiedAt: daysAgo(40), history: [{ level: 1, source: 'self', actor: 'Meena Sharma', verifiedAt: daysAgo(40) }] },
+    isConflicted: false,
+    outcomeEvents: [{ type: 'further_education', source: 'self', occurredAt: daysAgo(40), verificationLevel: { level: 1, source: 'self', actor: 'Meena Sharma' } }],
+    employmentPeriods: [],
+    incomeCheckpoints: [],
+    verifications: [],
+    skillMatchResults: [],
+    followupSchedules: [
+      { checkpointDay: 30, scheduledDate: daysAgo(40), status: 'completed' },
+      { checkpointDay: 90, scheduledDate: daysFromNow(20), status: 'pending' },
+      { checkpointDay: 180, scheduledDate: daysFromNow(110), status: 'pending' },
+      { checkpointDay: 365, scheduledDate: daysFromNow(295), status: 'pending' },
+    ],
+    followupResponses: [
+      {
+        checkpointDay: 30,
+        channel: 'web',
+        answers: {
+          status: 'further_education',
+          institution: 'Patna Women\'s College',
+          course: 'Bachelor of Commerce',
+          startDate: daysAgo(40),
+        },
+        submittedDate: daysAgo(40),
+      },
+    ],
+    rootCauses: [],
+    interventions: [],
+    consentRecords: [
+      { purpose: 'data_collection', granted: true, timestamp: daysAgo(76) },
+      { purpose: 'employer_contact', granted: false, timestamp: daysAgo(76) },
+      { purpose: 'analytics', granted: true, timestamp: daysAgo(76) },
+    ],
+    consentSummary: { dataCollection: true, employerContact: false, analytics: true },
+    outcomeRisk: { score: 0, band: 'low', factors: [], computedAt: daysAgo(1) },
+    attritionRisk: { score: 0, band: 'low', factors: [], computedAt: daysAgo(1) },
   },
 ];
 

@@ -100,14 +100,21 @@ async function buildGovernmentDashboard({ state = null, district = null, verifie
 
   // ---- 2. Totals ------------------------------------------------------
   const certified = trainees.filter((t) => t.training && t.training.certified);
+  const withOutcome = certified.filter(
+    (t) => !['certified_no_outcome'].includes(t.currentStatus),
+  );
+  const unknown = certified.filter((t) => t.currentStatus === 'certified_no_outcome').length;
+  const notResponding = certified.filter((t) => t.currentStatus === 'not_responding').length;
   const totals = {
     trained: trainees.length,
     certified: certified.length,
     employed: trainees.filter(isEmployed).length,
     selfEmployed: trainees.filter(isSelfEmployed).length,
     apprentices: trainees.filter(isApprentice).length,
+    furtherEducation: trainees.filter((t) => t.currentStatus === 'further_education').length,
     unemployed: trainees.filter((t) => t.currentStatus === 'unemployed').length,
-    notResponding: trainees.filter((t) => t.currentStatus === 'not_responding').length,
+    notResponding: notResponding,
+    unknown: unknown,
     providers: new Set(trainees.map((t) => String(t.providerId))).size,
     districts: new Set(trainees.map((t) => t.district)).size,
   };
@@ -126,6 +133,16 @@ async function buildGovernmentDashboard({ state = null, district = null, verifie
     numerator: placedNum,
     denominator: certified.length,
     confidence: placementConfidence,
+  };
+
+  // ---- 3b. KPI: Outcomes Known % --------------------------------
+  const outcomesKnownNum = withOutcome.length;
+  const outcomesKnown = {
+    value: pct(outcomesKnownNum, certified.length),
+    numerator: outcomesKnownNum,
+    denominator: certified.length,
+    unknownPct: pct(unknown, certified.length),
+    notRespondingPct: pct(notResponding, certified.length),
   };
 
   // ---- 4. KPI: Retention Rate --------------------------------------
@@ -345,6 +362,31 @@ async function buildGovernmentDashboard({ state = null, district = null, verifie
     });
   }
 
+  // ---- 11b. Equity Analysis (gender & demographic breakdown) ---------
+  const equityAnalysis = {};
+  const genders = ['male', 'female', 'other'];
+  const ageBands = ['18-24', '25-34', '35-44', '45+'];
+
+  for (const gender of genders) {
+    const cohort = trainees.filter((t) => t.demographicTags?.gender === gender);
+    const employed = cohort.filter(isEmployed).length;
+    const certified = cohort.filter((t) => t.training?.certified).length;
+    equityAnalysis[`gender_${gender}`] = {
+      cohort: cohort.length,
+      placementRate: pct(employed, certified),
+    };
+  }
+
+  for (const age of ageBands) {
+    const cohort = trainees.filter((t) => t.demographicTags?.ageBand === age);
+    const employed = cohort.filter(isEmployed).length;
+    const certified = cohort.filter((t) => t.training?.certified).length;
+    equityAnalysis[`age_${age}`] = {
+      cohort: cohort.length,
+      placementRate: pct(employed, certified),
+    };
+  }
+
   // ---- 12. Filter options (always the full set, not scope-limited) --
   const allDistricts = [...new Set(providers.map((p) => p.district))].sort();
   const scopeOptions = {
@@ -357,11 +399,12 @@ async function buildGovernmentDashboard({ state = null, district = null, verifie
     scopeOptions,
     generatedAt: new Date().toISOString(),
     totals,
-    kpis: { placementRate, retentionRate, wageGrowth, skillMatch },
+    kpis: { placementRate, outcomesKnown, retentionRate, wageGrowth, skillMatch },
     confidenceDistribution,
     performance: { byProvider, byDistrict },
     skillGaps,
     nonPlacement,
+    equityAnalysis,
     alerts,
   };
 }

@@ -262,4 +262,104 @@ router.post('/:scheduleId/response', async (req, res, next) => {
   }
 });
 
+// POST /api/followups/inbound — handle inbound SMS/WhatsApp/IVR responses
+router.post('/inbound', async (req, res, next) => {
+  try {
+    const { traineeId, phone, channel, text, digits } = req.body;
+    if (!traineeId || !channel) return res.status(400).json({ error: 'traineeId and channel required' });
+
+    const { MockMessage, OutcomeEvent } = require('../models');
+
+    // Log the inbound message
+    await MockMessage.create({
+      traineeId,
+      phone: phone || 'unknown',
+      channel,
+      direction: 'inbound',
+      body: text || '',
+      digits: digits || null,
+      status: 'received',
+    });
+
+    // Parse response (simplified keyword matching for demo)
+    const response = text ? text.toLowerCase() : '';
+    let status = null;
+    if (response.includes('job') || response.includes('employed') || response.includes('working')) status = 'employed';
+    else if (response.includes('self') || response.includes('business') || response.includes('own')) status = 'self_employed';
+    else if (response.includes('apprentice')) status = 'apprentice';
+    else if (response.includes('studying') || response.includes('education')) status = 'further_education';
+    else if (digits === '1') status = 'employed';
+    else if (digits === '2') status = 'self_employed';
+    else if (digits === '3') status = 'apprentice';
+    else if (digits === '4') status = 'further_education';
+
+    // Create outcome event if we got a valid status
+    if (status) {
+      await OutcomeEvent.create({
+        traineeId,
+        type: status,
+        source: 'self',
+        reportedVia: channel,
+        verificationLevel: { level: 1, source: 'self', actor: 'Followup response' },
+        occurredAt: new Date(),
+      });
+
+      // Update trainee status
+      await Trainee.updateOne({ _id: traineeId }, { currentStatus: status, currentConfidence: 'medium' });
+    }
+
+    res.json({ received: true, parsed: { status } });
+  } catch (err) {
+    next(err);
+  }
+});
+
+// GET /api/agent/queue — field agent queue (high risk + oldest first)
+router.get('/agent/queue', async (req, res, next) => {
+  try {
+    const queue = await Trainee.find({ 'outcomeRisk.score': { $gte: 50 } })
+      .sort({ 'outcomeRisk.score': -1, 'training.certificationDate': 1 })
+      .select('name contact district currentStatus outcomeRisk')
+      .limit(20)
+      .lean();
+
+    res.json({ queue, count: queue.length });
+  } catch (err) {
+    next(err);
+  }
+});
+
+// POST /api/agent/attempt — log an agent attempt (answered, no-answer, refused, call-back)
+router.post('/agent/attempt', async (req, res, next) => {
+  try {
+    const { traineeId, agentId, attemptStatus, notes } = req.body;
+    if (!traineeId || !attemptStatus) return res.status(400).json({ error: 'traineeId and attemptStatus required' });
+
+    const { FollowupSchedule } = require('../models');
+
+    // Update the schedule's attempt history
+    const sched = await FollowupSchedule.findOneAndUpdate(
+      { traineeId, status: 'pending' },
+      {
+        $push: {
+          'attempts.$': { step: 4, channel: 'agent', attempted: true, successful: attemptStatus === 'answered' }
+        },
+      }
+    );
+
+    // Log to AuditLog
+    await AuditLog.create({
+      action: 'agent_attempt',
+      actorId: agentId,
+      actorRole: 'field_agent',
+      traineeId,
+      details: { status: attemptStatus, notes },
+    });
+
+    res.json({ logged: true });
+  } catch (err) {
+    next(err);
+  }
+});
+
 module.exports = router;

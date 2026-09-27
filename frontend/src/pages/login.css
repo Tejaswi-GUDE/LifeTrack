@@ -14,23 +14,48 @@
   flex-direction: column;
   justify-content: space-between;
 }
-.login-brand-word {
+.login-brand-headline {
   font-family: var(--serif);
   font-weight: 600;
-  font-size: 30px;
+  font-size: 44px;
+  line-height: 1.1;
   letter-spacing: -0.01em;
+  margin-bottom: 16px;
 }
 .login-brand-tag {
-  color: var(--ink-70, rgba(255, 255, 255, 0.66));
-  font-size: 14px;
-  margin-top: 10px;
-  max-width: 38ch;
-  line-height: 1.55;
+  color: rgba(255, 255, 255, 0.66);
+  font-size: 15px;
+  max-width: 40ch;
+  line-height: 1.6;
+}
+.login-stats {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+  margin-top: 32px;
+}
+.login-stat-card {
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: var(--radius-md);
+  padding: 16px 12px;
+  text-align: center;
+  background: rgba(255, 255, 255, 0.04);
+}
+.stat-value {
+  font-size: 24px;
+  font-weight: 600;
+  line-height: 1.1;
+  margin-bottom: 4px;
+}
+.stat-label {
+  font-size: 11px;
+  color: rgba(255, 255, 255, 0.6);
+  letter-spacing: 0.03em;
 }
 .login-loop {
   margin: 44px 0 0;
   padding: 0;
-  display: flex;
+  display: none;
   flex-direction: column;
   gap: 14px;
 }
@@ -65,6 +90,15 @@
   display: flex;
   flex-direction: column;
   justify-content: center;
+  position: relative;
+}
+.login-top-controls {
+  position: absolute;
+  top: 28px;
+  right: 32px;
+  display: flex;
+  gap: 12px;
+  align-items: center;
 }
 .login-h1 {
   font-family: var(--serif);
@@ -145,6 +179,32 @@
   max-width: 44ch;
 }
 
+/* dark mode */
+:root[data-theme="dark"] .login-shell {
+  background: var(--paper);
+}
+:root[data-theme="dark"] .login-main {
+  background: var(--paper);
+  color: var(--ink);
+}
+:root[data-theme="dark"] .role-card {
+  background: var(--paper-raised);
+  border-color: var(--slate-15);
+  color: var(--ink);
+}
+:root[data-theme="dark"] .role-card:hover {
+  border-color: var(--ink);
+}
+:root[data-theme="dark"] .role-card .rc-blurb {
+  color: var(--slate);
+}
+:root[data-theme="dark"] .login-h1 {
+  color: var(--ink);
+}
+:root[data-theme="dark"] .login-sub {
+  color: var(--slate);
+}
+
 @media (max-width: 900px) {
   .login-shell {
     grid-template-columns: 1fr;
@@ -160,6 +220,12 @@
   }
   .login-main {
     padding: 36px 28px;
+  }
+  .login-top-controls {
+    position: relative;
+    top: auto;
+    right: auto;
+    margin-bottom: 32px;
   }
   .role-grid {
     grid-template-columns: 1fr;
