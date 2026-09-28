@@ -18,14 +18,28 @@ export function useApi(path, params) {
     }
     const id = ++reqId.current;
     setState((s) => ({ ...s, loading: true, error: null }));
-    apiGet(path, params).then(
-      (data) => {
-        if (id === reqId.current) setState({ data, error: null, loading: false });
-      },
-      (error) => {
-        if (id === reqId.current) setState({ data: null, error, loading: false });
-      },
-    );
+
+    let attempts = 0;
+    const maxRetries = 2;
+
+    function execute() {
+      apiGet(path, params).then(
+        (data) => {
+          if (id === reqId.current) setState({ data, error: null, loading: false });
+        },
+        (error) => {
+          if (id !== reqId.current) return;
+          if (attempts < maxRetries) {
+            attempts++;
+            setTimeout(execute, 1500 * attempts);
+          } else {
+            setState({ data: null, error, loading: false });
+          }
+        },
+      );
+    }
+
+    execute();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [path, paramsKey]);
 
